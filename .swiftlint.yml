@@ -1,0 +1,16 @@
+excluded:
+  - .build
+  - .swiftpm
+
+disabled_rules:
+  - trailing_comma  # Matches acaraje convention
+
+# SwiftUI ContentViews naturally grow with sub-views and modifiers.
+# Raise the defaults to practical thresholds for this architecture.
+type_body_length:
+  warning: 320
+  error: 500
+
+file_length:
+  warning: 450
+  error: 1000
