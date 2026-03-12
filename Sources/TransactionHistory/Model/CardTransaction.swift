@@ -11,22 +11,30 @@ import SwiftData
 public final class CardTransaction: Identifiable {
     public var id: UUID = UUID()
     public var name: String = ""
-    public var ammount: String = ""
+    public var currency: String = ""
+    public var amount: Double = Double.nan
     public var merchant: String = ""
     public var card: String = ""
     public var createdAt: Date = Date()
 
+    /// Locale-formatted string combining currency and amount (e.g. "€12.34").
+    var formattedAmount: String {
+        amount.formatted(.currency(code: currency))
+    }
+
     init(
         id: UUID = UUID(),
         name: String,
-        ammount: String,
+        currency: String,
+        amount: Double,
         merchant: String,
         card: String,
         createdAt: Date = Date()
     ) {
         self.id = id
         self.name = name
-        self.ammount = ammount
+        self.currency = currency
+        self.amount = amount
         self.merchant = merchant
         self.card = card
         self.createdAt = createdAt
