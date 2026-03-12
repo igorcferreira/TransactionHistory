@@ -13,7 +13,7 @@ struct ShortTransactionView: View {
         VStack(alignment: .leading) {
             Text(transaction.name)
                 .bold()
-            Text(transaction.ammount)
+            Text(transaction.formattedAmount)
         }
     }
 }
@@ -21,7 +21,8 @@ struct ShortTransactionView: View {
 #Preview {
     ShortTransactionView(transaction: .init(
         name: "Transaction Mock",
-        ammount: "€12.34",
+        currency: "EUR",
+        amount: 12.34,
         merchant: "A nice merchant",
         card: "Virtual Card"
     ))

@@ -10,18 +10,18 @@ import AppIntents
 struct TransactionEntry: Sendable, Identifiable {
     var id: UUID
     var name: String
-    var ammount: String
+    var amount: String
 
-    init(id: UUID, name: String, ammount: String) {
+    init(id: UUID, name: String, amount: String) {
         self.id = id
         self.name = name
-        self.ammount = ammount
+        self.amount = amount
     }
 
     init(_ card: CardTransaction) {
         self.id = card.id
         self.name = card.name
-        self.ammount = card.ammount
+        self.amount = card.formattedAmount
     }
 }
 
@@ -32,7 +32,7 @@ extension TransactionEntry: AppEntity {
     var displayRepresentation: DisplayRepresentation {
         .init(
             title: .init(stringLiteral: name),
-            subtitle: .init(stringLiteral: ammount)
+            subtitle: .init(stringLiteral: amount)
         )
     }
 }

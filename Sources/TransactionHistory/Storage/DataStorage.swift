@@ -73,8 +73,8 @@ public extension DataStorage {
             for index in (1..<10) {
                 context.insert(CardTransaction(
                     name: "Transaction \(index)",
-                    ammount: Double.random(in: 0.5..<100.0)
-                        .formatted(.currency(code: "EUR")),
+                    currency: "EUR",
+                    amount: Double.random(in: 0.5..<100.0),
                     merchant: "Merchant",
                     card: "Card 1"
                 ))
