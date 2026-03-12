@@ -33,6 +33,13 @@ As consequence, running the app test is only necessary when changing the app's x
 
 The Package tests must always be run.
 
+> **⚠️ Definition of Done:** A feature or change is only complete when **all three** checks pass:
+> 1. macOS package tests — `xcrun swift test -c debug`
+> 2. iOS package tests — `xcodebuild test -configuration Debug -scheme 'TransactionHistory' -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17'`
+> 3. SwiftLint — `swiftlint lint` reports zero violations
+>
+> Never skip any of these steps. If the change also touches App-level files, the corresponding App tests must pass too.
+
 Testing requires the usage of `xcrun swift test` and `xcodebuild test`.
 
 > **Note:** Always use `xcrun swift test` (not plain `swift test`) to ensure the Xcode-bundled
@@ -75,7 +82,7 @@ Testing app:
 
 ### SwiftLint
 
-**Always run SwiftLint before declaring any change or feature complete.** Fix every error and warning reported before committing.
+**Always run SwiftLint in addition to both macOS and iOS package tests before declaring any change or feature complete.** Fix every error and warning reported before committing.
 
 ```shell
 swiftlint lint
