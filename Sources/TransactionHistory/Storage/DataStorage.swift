@@ -8,7 +8,7 @@ import Foundation
 import SwiftData
 
 public struct DataStorage: Sendable {
-    private var modelContext: ModelContext {
+    var modelContext: ModelContext {
         ModelContext(sharedModelContainer)
     }
     public let sharedModelContainer: ModelContainer = {

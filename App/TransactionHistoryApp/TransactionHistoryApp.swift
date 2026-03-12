@@ -8,10 +8,15 @@
 import SwiftUI
 import SwiftData
 import TransactionHistory
+import AppIntents
 
 @main
-struct TransactionHistoryAppApp: App {
+struct TransactionHistoryApp: App {
     let dataStorage = DataStorage()
+
+    init() {
+        TransactionHistoryProvider.updateAppShortcutParameters()
+    }
 
     var body: some Scene {
         WindowGroup {

@@ -40,3 +40,31 @@ public final class CardTransaction: Identifiable {
         self.createdAt = createdAt
     }
 }
+
+public extension DataStorage {
+    func create(
+        id: UUID = UUID(),
+        name: String,
+        currency: String,
+        amount: Double,
+        merchant: String,
+        card: String,
+        createdAt: Date = Date()
+    ) throws -> CardTransaction {
+        let context = modelContext
+        let card = CardTransaction(
+            id: id,
+            name: name,
+            currency: currency,
+            amount: amount,
+            merchant: merchant,
+            card: card,
+            createdAt: createdAt
+        )
+        try context.transaction {
+            context.insert(card)
+            try context.save()
+        }
+        return card
+    }
+}

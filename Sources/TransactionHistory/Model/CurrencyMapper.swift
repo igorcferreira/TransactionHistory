@@ -30,7 +30,7 @@ struct CurrencyMapper: Sendable {
     ]
 
     // Built once — sorted longest symbol first so "R$" matches before "$".
-    private static let symbolTable: [SymbolEntry] = {
+    private let symbolTable: [SymbolEntry] = {
         var seen: [String: SymbolEntry] = [:]
 
         for identifier in Locale.availableIdentifiers {
@@ -44,7 +44,7 @@ struct CurrencyMapper: Sendable {
 
             if let existing = seen[symbol] {
                 // Replace if the new entry matches the preferred code for this symbol.
-                if let preferred = preferredCodes[symbol], code == preferred {
+                if let preferred = Self.preferredCodes[symbol], code == preferred {
                     seen[symbol] = SymbolEntry(symbol: symbol, locale: locale, code: code)
                 }
                 _ = existing
@@ -62,7 +62,7 @@ struct CurrencyMapper: Sendable {
     /// - Parameter input: A string like "$3.14", "R$3,14", "€3.14", or a plain number "3.14".
     /// - Returns: A `CurrencyValue` with the detected ISO code and numeric value,
     ///   or `nil` if parsing fails entirely.
-    static func parse(_ input: String) -> CurrencyValue? {
+    func parse(_ input: String) -> CurrencyValue? {
         let trimmed = input.trimmingCharacters(in: .whitespaces)
         guard !trimmed.isEmpty else { return nil }
 
@@ -88,7 +88,7 @@ struct CurrencyMapper: Sendable {
 
     /// Tries multiple strategies to parse a numeric string:
     /// the given locale, POSIX, and a comma-decimal locale as fallbacks.
-    private static func parseNumber(_ string: String, locale: Locale) -> Double? {
+    private func parseNumber(_ string: String, locale: Locale) -> Double? {
         let formatter = NumberFormatter()
         formatter.numberStyle = .decimal
 
@@ -112,7 +112,7 @@ struct CurrencyMapper: Sendable {
     /// Fallback: parse a plain number string using the current locale's currency code.
     /// Tries the current locale first, then POSIX, then a comma-decimal locale (de_DE)
     /// to cover inputs like "3,14" on a dot-decimal system.
-    private static func parseFallback(_ string: String) -> CurrencyValue? {
+    private func parseFallback(_ string: String) -> CurrencyValue? {
         let currentLocale = Locale.current
         let code = currentLocale.currency?.identifier ?? "USD"
 

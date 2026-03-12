@@ -18,7 +18,7 @@ struct CurrencyMapperTests {
         // GIVEN a US dollar formatted string
         let input = "$3.14"
         // WHEN parsing
-        let result = CurrencyMapper.parse(input)
+        let result = CurrencyMapper().parse(input)
         // THEN it returns USD with the correct value
         #expect(result?.code == "USD")
         #expect(result?.value == 3.14)
@@ -29,7 +29,7 @@ struct CurrencyMapperTests {
         // GIVEN a Brazilian real formatted string with comma as decimal separator
         let input = "R$3,14"
         // WHEN parsing
-        let result = CurrencyMapper.parse(input)
+        let result = CurrencyMapper().parse(input)
         // THEN it returns BRL with the correct value
         #expect(result?.code == "BRL")
         #expect(result?.value == 3.14)
@@ -40,7 +40,7 @@ struct CurrencyMapperTests {
         // GIVEN a euro formatted string
         let input = "€3.14"
         // WHEN parsing
-        let result = CurrencyMapper.parse(input)
+        let result = CurrencyMapper().parse(input)
         // THEN it returns EUR with the correct value
         #expect(result?.code == "EUR")
         #expect(result?.value == 3.14)
@@ -51,7 +51,7 @@ struct CurrencyMapperTests {
         // GIVEN a British pound formatted string with thousands grouping
         let input = "£1,234.56"
         // WHEN parsing
-        let result = CurrencyMapper.parse(input)
+        let result = CurrencyMapper().parse(input)
         // THEN it returns GBP with the correct value
         #expect(result?.code == "GBP")
         #expect(result?.value == 1234.56)
@@ -62,7 +62,7 @@ struct CurrencyMapperTests {
         // GIVEN a Japanese yen formatted string
         let input = "¥100"
         // WHEN parsing
-        let result = CurrencyMapper.parse(input)
+        let result = CurrencyMapper().parse(input)
         // THEN it returns a yen-based currency with the correct value
         let yenCodes = ["JPY", "CNY"]
         #expect(yenCodes.contains(result?.code ?? ""))
@@ -76,7 +76,7 @@ struct CurrencyMapperTests {
         // GIVEN a plain number string without a currency symbol
         let input = "3.14"
         // WHEN parsing
-        let result = CurrencyMapper.parse(input)
+        let result = CurrencyMapper().parse(input)
         // THEN it returns the current locale's currency with the correct value
         let expectedCode = Locale.current.currency?.identifier ?? "USD"
         #expect(result?.code == expectedCode)
@@ -88,7 +88,7 @@ struct CurrencyMapperTests {
         // GIVEN a plain number string using comma as decimal separator
         let input = "3,14"
         // WHEN parsing
-        let result = CurrencyMapper.parse(input)
+        let result = CurrencyMapper().parse(input)
         // THEN it returns a value (interpretation depends on locale)
         #expect(result != nil)
         let expectedCode = Locale.current.currency?.identifier ?? "USD"
@@ -101,7 +101,7 @@ struct CurrencyMapperTests {
     func parseEmpty() {
         // GIVEN an empty string
         // WHEN parsing
-        let result = CurrencyMapper.parse("")
+        let result = CurrencyMapper().parse("")
         // THEN it returns nil
         #expect(result == nil)
     }
@@ -110,7 +110,7 @@ struct CurrencyMapperTests {
     func parseWhitespace() {
         // GIVEN a whitespace-only string
         // WHEN parsing
-        let result = CurrencyMapper.parse("   ")
+        let result = CurrencyMapper().parse("   ")
         // THEN it returns nil
         #expect(result == nil)
     }
@@ -119,7 +119,7 @@ struct CurrencyMapperTests {
     func parseGarbage() {
         // GIVEN a string with no numeric content
         // WHEN parsing
-        let result = CurrencyMapper.parse("abc")
+        let result = CurrencyMapper().parse("abc")
         // THEN it returns nil
         #expect(result == nil)
     }
