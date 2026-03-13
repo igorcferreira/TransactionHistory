@@ -46,6 +46,17 @@ struct CurrencyMapperTests {
         #expect(result?.value == 3.14)
     }
 
+    @Test("Parses EUR from euro sign in suffix position with comma decimal")
+    func parseEURSpanishFormat() {
+        // GIVEN a Spanish-style euro string with symbol after value and comma decimal
+        let input = "3,14 €"
+        // WHEN parsing
+        let result = CurrencyMapper().parse(input)
+        // THEN it returns EUR with the correct value
+        #expect(result?.code == "EUR")
+        #expect(result?.value == 3.14)
+    }
+
     @Test("Parses GBP with grouping separator")
     func parseGBP() {
         // GIVEN a British pound formatted string with thousands grouping
