@@ -24,7 +24,19 @@ TransactionHistory/
 ├─ App/TransactionHistoryAppUITests/   # Interface test suit for the app.
 ```
 
-### Running tests
+## **⚠️ Definition of Done:** A feature or change is only complete when **all three** checks pass:
+1. macOS package tests
+2. iOS package tests
+3. SwiftLint — `swiftlint lint` reports zero violations
+
+Never skip any of these steps.
+
+**When the change touches App-level files** (anything under `App/TransactionHistoryApp/`, `App/TransactionHistoryApp.xcodeproj/`, or asset catalogs), you **must also run the App tests** on both platforms, as described in the `Running tests` subsections bellow.
+
+App-level changes include: app entry point (`TransactionHistoryApp.swift`), `Info.plist`, entitlements, asset catalogs (icons, colors), and xcodeproj build settings.
+These tests are **not optional** — they validate that the app builds and launches correctly on both platforms.
+
+## Running tests
 
 The project has a Swift Package AND a SwiftUI app.
 
@@ -33,26 +45,17 @@ As consequence, running the app test is only necessary when changing the app's x
 
 The Package tests must always be run.
 
-> **⚠️ Definition of Done:** A feature or change is only complete when **all three** checks pass:
-> 1. macOS package tests — `xcrun swift test -c debug`
-> 2. iOS package tests — `xcodebuild test -configuration Debug -scheme 'TransactionHistory' -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17'`
-> 3. SwiftLint — `swiftlint lint` reports zero violations
->
-> Never skip any of these steps. If the change also touches App-level files, the corresponding App tests must pass too.
-
-Testing requires the usage of `xcrun swift test` and `xcodebuild test`.
-
-> **Note:** Always use `xcrun swift test` (not plain `swift test`) to ensure the Xcode-bundled
-> toolchain is used. The `_SwiftData_SwiftUI` cross-import overlay that provides `@Query` and
-> `modelContainer` is only available through the Xcode toolchain, not standalone Swift toolchains.
-
-#### macOS
+### macOS
 
 Testing Packages:
 
 ```shell
 xcrun swift test -c debug
 ```
+
+> **Note:** Always use `xcrun swift test` (not plain `swift test`) to ensure the Xcode-bundled
+> toolchain is used. The `_SwiftData_SwiftUI` cross-import overlay that provides `@Query` and
+> `modelContainer` is only available through the Xcode toolchain, not standalone Swift toolchains.
 
 Testing app:
 
@@ -62,7 +65,7 @@ Testing app:
     -destination 'platform=macOS,arch=arm64,name=My Mac')
 ```
 
-#### iOS 
+### iOS 
 
 Testing package:
 
@@ -98,7 +101,7 @@ SwiftLint also runs automatically as an Xcode build phase on the TransactionHist
 
 **When SwiftLint reports a violation, always fix the code first.** Only propose disabling a rule or raising a threshold after explicitly telling the user what you intend to change and receiving their confirmation. Never silently adjust `.swiftlint.yml`.
 
-### Git lock
+## Git lock
 
 **NEVER fight the git lock system.** This means:
 - NEVER delete or attempt to remove `.git/index.lock`
