@@ -11,22 +11,25 @@ public struct DataStorage: Sendable {
     var modelContext: ModelContext {
         ModelContext(sharedModelContainer)
     }
-    public let sharedModelContainer: ModelContainer = {
-        Self.createMockEnvironment(memoryOnly: false)
-    }()
+    public let sharedModelContainer: ModelContainer
 
-    public init() {}
+    public init() {
+        self.sharedModelContainer = Self.createMockEnvironment(memoryOnly: false)
+    }
+
+    /// Internal init for testing with a custom container.
+    init(container: ModelContainer) {
+        self.sharedModelContainer = container
+    }
 
     func top() throws -> [CardTransaction] {
-        let batch = try modelContext.fetch(
-            FetchDescriptor<CardTransaction>(
-                sortBy: [
-                    SortDescriptor(\.createdAt, order: .reverse)
-                ]
-            ),
-            batchSize: 10
+        var descriptor = FetchDescriptor<CardTransaction>(
+            sortBy: [
+                SortDescriptor(\.createdAt, order: .reverse)
+            ]
         )
-        return Array(batch)
+        descriptor.fetchLimit = 10
+        return try modelContext.fetch(descriptor)
     }
 
     func with(ids: [UUID]) throws -> [CardTransaction] {
@@ -49,7 +52,8 @@ private extension DataStorage {
         let modelConfiguration = ModelConfiguration(
             schema: schema,
             isStoredInMemoryOnly: memoryOnly,
-            groupContainer: memoryOnly ? .automatic : .identifier(group)
+            groupContainer: memoryOnly ? .automatic : .identifier(group),
+            cloudKitDatabase: memoryOnly ? .none : .automatic
         )
 
         do {
