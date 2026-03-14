@@ -10,13 +10,19 @@ struct ShortTransactionView: View {
     let transaction: CardTransaction
 
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(transaction.name)
-                .bold()
-            Text(transaction.merchant)
+        HStack(alignment: .top) {
+            VStack(alignment: .leading) {
+                Text(transaction.name)
+                    .bold()
+                Text(transaction.merchant)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                Text(transaction.formattedAmount)
+            }
+            Spacer()
+            Text(transaction.createdAt, style: .time)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-            Text(transaction.formattedAmount)
         }
     }
 }

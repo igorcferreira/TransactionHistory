@@ -21,13 +21,21 @@ public struct TransactionListView: View {
                 sortOrder: $viewModel.sortOrder
             )
             List {
-                ForEach(viewModel.transactions) { transaction in
-                    ShortTransactionView(transaction: transaction)
-                        .onAppear {
-                            if transaction.id == viewModel.transactions.last?.id {
-                                viewModel.loadNextBatch(context: modelContext)
-                            }
+                ForEach(viewModel.groupedTransactions) { group in
+                    Section {
+                        ForEach(group.transactions) { transaction in
+                            ShortTransactionView(transaction: transaction)
+                                .onAppear {
+                                    if transaction.id == viewModel.transactions.last?.id {
+                                        viewModel.loadNextBatch(context: modelContext)
+                                    }
+                                }
                         }
+                    } header: {
+                        Text(viewModel.sectionTitle(for: group.date))
+                            .font(.headline)
+                            .textCase(.uppercase)
+                    }
                 }
                 if viewModel.hasMoreItems && !viewModel.transactions.isEmpty {
                     ProgressView()
@@ -35,6 +43,9 @@ public struct TransactionListView: View {
                 }
             }
             .listStyle(.plain)
+        }
+        .refreshable {
+            viewModel.reload(context: modelContext)
         }
         .onAppear {
             if viewModel.transactions.isEmpty {

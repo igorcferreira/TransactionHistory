@@ -229,4 +229,180 @@ struct TransactionListViewModelTests {
         // THEN the count remains unchanged
         #expect(viewModel.transactions.count == 5)
     }
+
+    // MARK: - Grouped transactions
+
+    @Test("groupedTransactions groups by calendar date")
+    func groupedTransactionsGroupsByDate() throws {
+        // GIVEN transactions on two different days
+        let context = try Self.makeContext()
+        let today = Date()
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today)!
+        for index in 0..<3 {
+            let transaction = CardTransaction(
+                name: "Today \(index)",
+                currency: "EUR",
+                amount: 1.0,
+                merchant: "Merchant",
+                card: "Card",
+                createdAt: today.addingTimeInterval(TimeInterval(index * 60))
+            )
+            context.insert(transaction)
+        }
+        for index in 0..<2 {
+            let transaction = CardTransaction(
+                name: "Yesterday \(index)",
+                currency: "EUR",
+                amount: 1.0,
+                merchant: "Merchant",
+                card: "Card",
+                createdAt: yesterday.addingTimeInterval(TimeInterval(index * 60))
+            )
+            context.insert(transaction)
+        }
+        try context.save()
+
+        let viewModel = TransactionListViewModel()
+
+        // WHEN loading
+        viewModel.reload(context: context)
+
+        // THEN transactions are grouped into two date sections
+        let groups = viewModel.groupedTransactions
+        #expect(groups.count == 2)
+        let totalCount = groups.reduce(0) { $0 + $1.transactions.count }
+        #expect(totalCount == 5)
+    }
+
+    @Test("sectionTitle returns Today for today's date")
+    func sectionTitleToday() {
+        // GIVEN today's date
+        let viewModel = TransactionListViewModel()
+
+        // WHEN getting the section title
+        let title = viewModel.sectionTitle(for: Date())
+
+        // THEN it returns "Today"
+        #expect(title == String(localized: "Today"))
+    }
+
+    @Test("sectionTitle returns Yesterday for yesterday's date")
+    func sectionTitleYesterday() {
+        // GIVEN yesterday's date
+        let viewModel = TransactionListViewModel()
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: Date())!
+
+        // WHEN getting the section title
+        let title = viewModel.sectionTitle(for: yesterday)
+
+        // THEN it returns "Yesterday"
+        #expect(title == String(localized: "Yesterday"))
+    }
+
+    @Test("sectionTitle returns formatted date for older dates")
+    func sectionTitleOlderDate() {
+        // GIVEN a date from last week
+        let viewModel = TransactionListViewModel()
+        let oldDate = Calendar.current.date(byAdding: .day, value: -7, to: Date())!
+
+        // WHEN getting the section title
+        let title = viewModel.sectionTitle(for: oldDate)
+
+        // THEN it does not return Today or Yesterday
+        #expect(title != String(localized: "Today"))
+        #expect(title != String(localized: "Yesterday"))
+        #expect(!title.isEmpty)
+    }
+
+    @Test("groupedTransactions respects sort order")
+    func groupedTransactionsRespectsOrder() throws {
+        // GIVEN transactions on two different days
+        let context = try Self.makeContext()
+        let today = Date()
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today)!
+        let todayTransaction = CardTransaction(
+            name: "Today", currency: "EUR", amount: 1.0,
+            merchant: "Merchant", card: "Card", createdAt: today
+        )
+        let yesterdayTransaction = CardTransaction(
+            name: "Yesterday", currency: "EUR", amount: 1.0,
+            merchant: "Merchant", card: "Card", createdAt: yesterday
+        )
+        context.insert(todayTransaction)
+        context.insert(yesterdayTransaction)
+        try context.save()
+
+        let viewModel = TransactionListViewModel()
+
+        // WHEN loading with newest first (reverse)
+        viewModel.sortOrder = .reverse
+        viewModel.reload(context: context)
+
+        // THEN today's group comes first
+        let reverseGroups = viewModel.groupedTransactions
+        #expect(reverseGroups.count == 2)
+        #expect(Calendar.current.isDateInToday(reverseGroups[0].date))
+        #expect(Calendar.current.isDateInYesterday(reverseGroups[1].date))
+
+        // WHEN switching to oldest first (forward)
+        viewModel.sortOrder = .forward
+        viewModel.reload(context: context)
+
+        // THEN yesterday's group comes first
+        let forwardGroups = viewModel.groupedTransactions
+        #expect(forwardGroups.count == 2)
+        #expect(Calendar.current.isDateInYesterday(forwardGroups[0].date))
+        #expect(Calendar.current.isDateInToday(forwardGroups[1].date))
+    }
+
+    @Test("Search filters affect grouped transactions")
+    func searchFiltersAffectGroupedTransactions() throws {
+        // GIVEN transactions with different merchants across two days
+        let context = try Self.makeContext()
+        let today = Date()
+        let yesterday = Calendar.current.date(byAdding: .day, value: -1, to: today)!
+
+        // Two "Coffee" transactions today, one "Book" transaction yesterday
+        for index in 0..<2 {
+            let transaction = CardTransaction(
+                name: "Coffee \(index)", currency: "EUR", amount: 1.0,
+                merchant: "Coffee Shop", card: "Card",
+                createdAt: today.addingTimeInterval(TimeInterval(index * 60))
+            )
+            context.insert(transaction)
+        }
+        let bookTransaction = CardTransaction(
+            name: "Book", currency: "EUR", amount: 1.0,
+            merchant: "Book Store", card: "Card", createdAt: yesterday
+        )
+        context.insert(bookTransaction)
+        try context.save()
+
+        let viewModel = TransactionListViewModel()
+
+        // WHEN searching for "Coffee"
+        viewModel.searchText = "Coffee"
+        viewModel.reload(context: context)
+
+        // THEN only one date group remains (today) with 2 transactions
+        let groups = viewModel.groupedTransactions
+        #expect(groups.count == 1)
+        #expect(groups[0].transactions.count == 2)
+        #expect(Calendar.current.isDateInToday(groups[0].date))
+    }
+
+    @Test("Search with no matches produces empty grouped transactions")
+    func searchNoMatchesProducesEmptyGroups() throws {
+        // GIVEN transactions
+        let context = try Self.makeContext()
+        try Self.seed(3, in: context, merchant: "Coffee Shop")
+        let viewModel = TransactionListViewModel()
+
+        // WHEN searching for a non-existent merchant
+        viewModel.searchText = "Nonexistent"
+        viewModel.reload(context: context)
+
+        // THEN grouped transactions is also empty
+        #expect(viewModel.groupedTransactions.isEmpty)
+    }
 }
