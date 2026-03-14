@@ -52,3 +52,9 @@ jobs:
 
       - name: Run tests
         run: xcrun swift test -c debug
+
+      - name: Run iOS tests
+        run: |
+          xcodebuild test -configuration Debug \
+            -scheme 'TransactionHistory' \
+            -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17'
