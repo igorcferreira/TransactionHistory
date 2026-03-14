@@ -31,10 +31,12 @@ TransactionHistory/
 
 Never skip any of these steps.
 
-**When the change touches App-level files** (anything under `App/TransactionHistoryApp/`, `App/TransactionHistoryApp.xcodeproj/`, or asset catalogs), you **must also run the App tests** on both platforms, as described in the `Running tests` subsections bellow.
+**When the change touches App-level files** (anything under `App/TransactionHistoryApp/`, `App/TransactionHistoryApp.xcodeproj/`, or asset catalogs), you **must also run the App unit tests** on both platforms, as described in the `Running tests` subsections below.
 
-App-level changes include: app entry point (`TransactionHistoryApp.swift`), `Info.plist`, entitlements, asset catalogs (icons, colors), and xcodeproj build settings.
+App-level changes include: app entry point (`TransactionHistoryApp.swift`), `Info.plist`, entitlements, asset catalogs (icons, colors), xcodeproj build settings, and test plans.
 These tests are **not optional** — they validate that the app builds and launches correctly on both platforms.
+
+**UI tests (`TransactionHistoryAppUITests`) are expensive** — they launch the full app in light and dark appearance modes. **Do NOT run UI tests as part of routine validation.** Only run them when the user explicitly requests it.
 
 ## Running tests
 
@@ -57,15 +59,25 @@ xcrun swift test -c debug
 > toolchain is used. The `_SwiftData_SwiftUI` cross-import overlay that provides `@Query` and
 > `modelContainer` is only available through the Xcode toolchain, not standalone Swift toolchains.
 
-Testing app:
+Testing app (unit tests only):
 
 ```shell
 (cd App ; xcodebuild test -configuration Debug \
     -scheme 'TransactionHistoryApp' \
-    -destination 'platform=macOS,arch=arm64,name=My Mac')
+    -destination 'platform=macOS,arch=arm64,name=My Mac' \
+    -only-testing:TransactionHistoryAppTests)
 ```
 
-### iOS 
+Testing app (UI tests — only when explicitly requested):
+
+```shell
+(cd App ; xcodebuild test -configuration Debug \
+    -scheme 'TransactionHistoryApp' \
+    -destination 'platform=macOS,arch=arm64,name=My Mac' \
+    -only-testing:TransactionHistoryAppUITests)
+```
+
+### iOS
 
 Testing package:
 
@@ -75,12 +87,22 @@ xcodebuild test -configuration Debug \
     -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17'
 ```
 
-Testing app:
+Testing app (unit tests only):
 
 ```shell
 (cd App ; xcodebuild test -configuration Debug \
     -scheme 'TransactionHistoryApp' \
-    -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17')
+    -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17' \
+    -only-testing:TransactionHistoryAppTests)
+```
+
+Testing app (UI tests — only when explicitly requested):
+
+```shell
+(cd App ; xcodebuild test -configuration Debug \
+    -scheme 'TransactionHistoryApp' \
+    -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17' \
+    -only-testing:TransactionHistoryAppUITests)
 ```
 
 ### SwiftLint

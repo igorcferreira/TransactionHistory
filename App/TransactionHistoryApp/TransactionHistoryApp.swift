@@ -15,10 +15,12 @@ import AppKit
 #endif
 
 extension ProcessInfo {
+    static let isTestEnvironmentKey = "IS_UI_TESTING"
+
     static var isTest: Bool {
-        ProcessInfo
-            .processInfo
-            .environment["XCTestConfigurationFilePath"] != nil
+        let env = ProcessInfo.processInfo.environment
+        return env["XCTestConfigurationFilePath"] != nil
+            || env[isTestEnvironmentKey] == "1"
     }
 }
 
@@ -54,7 +56,7 @@ struct TransactionHistoryApp: App {
         #if targetEnvironment(simulator)
         .modelContainer(DataStorage.createMockEnvironment())
         #else
-        .modelContainer(dataStorage.sharedModelContainer)
+        .modelContainer(container)
         #endif
     }
 

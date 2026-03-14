@@ -1,0 +1,45 @@
+{
+  "configurations" : [
+    {
+      "id" : "689D2FC3-E9FA-4246-A6BB-DFC73667EE63",
+      "name" : "Light Appearance",
+      "options" : {
+        "environmentVariableEntries" : [
+
+        ]
+      }
+    },
+    {
+      "id" : "EA6752DC-901D-44C0-8704-3D0778A8C777",
+      "name" : "Dark Appearance",
+      "options" : {
+        "uiAppearance" : "dark"
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "environmentVariableEntries" : [
+      {
+        "key" : "IS_UI_TESTING",
+        "value" : "1"
+      }
+    ]
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:TransactionHistoryApp.xcodeproj",
+        "identifier" : "78DB43E82F632CEB00649077",
+        "name" : "TransactionHistoryAppTests"
+      }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:TransactionHistoryApp.xcodeproj",
+        "identifier" : "78DB43F22F632CEB00649077",
+        "name" : "TransactionHistoryAppUITests"
+      }
+    }
+  ],
+  "version" : 1
+}

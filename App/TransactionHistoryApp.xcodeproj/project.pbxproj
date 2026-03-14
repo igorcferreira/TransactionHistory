@@ -31,6 +31,7 @@
 		78DB43D82F632CEA00649077 /* TransactionHistoryApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TransactionHistoryApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		78DB43E92F632CEB00649077 /* TransactionHistoryAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TransactionHistoryAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		78DB43F32F632CEB00649077 /* TransactionHistoryAppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TransactionHistoryAppUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		78DB44202F64A00000649077 /* TransactionHistoryApp.xctestplan */ = {isa = PBXFileReference; lastKnownFileType = text; path = TransactionHistoryApp.xctestplan; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -93,6 +94,7 @@
 		78DB43CF2F632CEA00649077 = {
 			isa = PBXGroup;
 			children = (
+				78DB44202F64A00000649077 /* TransactionHistoryApp.xctestplan */,
 				78DB43DA2F632CEA00649077 /* TransactionHistoryApp */,
 				78DB43EC2F632CEB00649077 /* TransactionHistoryAppTests */,
 				78DB43F62F632CEB00649077 /* TransactionHistoryAppUITests */,
@@ -317,8 +319,8 @@
 		78DB43FD2F632CEB00649077 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-Dark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_DARK_APPICON_NAME = "AppIcon-Dark";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = TransactionHistoryApp/TransactionHistoryApp.entitlements;
@@ -382,8 +384,8 @@
 		78DB43FE2F632CEB00649077 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_ALTERNATE_APPICON_NAMES = "AppIcon-Dark";
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_DARK_APPICON_NAME = "AppIcon-Dark";
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_ENTITLEMENTS = TransactionHistoryApp/TransactionHistoryApp.entitlements;
