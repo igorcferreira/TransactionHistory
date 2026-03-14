@@ -14,6 +14,14 @@ import AppIntents
 import AppKit
 #endif
 
+extension ProcessInfo {
+    static var isTest: Bool {
+        ProcessInfo
+            .processInfo
+            .environment["XCTestConfigurationFilePath"] != nil
+    }
+}
+
 @main
 struct TransactionHistoryApp: App {
     let dataStorage = DataStorage()
@@ -22,6 +30,14 @@ struct TransactionHistoryApp: App {
     // Observes system appearance changes to switch the Dock icon
     @Environment(\.colorScheme) private var colorScheme
     #endif
+
+    var container: ModelContainer {
+        if ProcessInfo.isTest {
+            DataStorage.createMockEnvironment()
+        } else {
+            dataStorage.sharedModelContainer
+        }
+    }
 
     init() {
         TransactionHistoryProvider.updateAppShortcutParameters()
@@ -35,7 +51,7 @@ struct TransactionHistoryApp: App {
         WindowGroup {
             TransactionListView()
         }
-        #if DEBUG
+        #if targetEnvironment(simulator)
         .modelContainer(DataStorage.createMockEnvironment())
         #else
         .modelContainer(dataStorage.sharedModelContainer)
