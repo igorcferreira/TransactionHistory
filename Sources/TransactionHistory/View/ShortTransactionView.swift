@@ -1,5 +1,5 @@
 //
-//  TransactionView.swift
+//  ShortTransactionView.swift
 //  TransactionHistory
 //
 //  Created by Igor Ferreira on 12/03/2026.
@@ -13,6 +13,9 @@ struct ShortTransactionView: View {
         VStack(alignment: .leading) {
             Text(transaction.name)
                 .bold()
+            Text(transaction.merchant)
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
             Text(transaction.formattedAmount)
         }
     }
