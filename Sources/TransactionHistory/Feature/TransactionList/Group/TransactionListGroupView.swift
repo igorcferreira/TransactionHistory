@@ -39,19 +39,22 @@ struct TransactionListGroupView: View {
         List {
             ForEach(groups) { group in
                 Section {
-                    ForEach(group.transactions) { transaction in
+                    Iterate(group.transactions.enumerated()) {
                         ShortTransactionView(
-                            transaction: transaction
+                            transaction: $0
                         )
                     }
                 } header: {
                     Text(viewModel.sectionTitle(for: group.date))
                         .font(.headline)
                         .textCase(.uppercase)
+                        .id("section_\(group.id)_header")
                 }
+                .id("section_\(group.id)")
             }
         }
         .listStyle(.plain)
+        .id("transaction_list")
     }
 }
 
