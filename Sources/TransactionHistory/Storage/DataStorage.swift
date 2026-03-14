@@ -73,13 +73,19 @@ public extension DataStorage {
         let container = Self.createMockEnvironment(memoryOnly: true)
         let context = ModelContext(container)
 
+        let merchants = [
+            "Coffee Corner", "TechStore", "Grocery Mart",
+            "Book Haven", "Gas Station", "Coffee Corner",
+            "Pharmacy Plus", "TechStore", "Restaurant Lux"
+        ]
+
         try? context.transaction {
             for index in (1..<10) {
                 context.insert(CardTransaction(
                     name: "Transaction \(index)",
                     currency: "EUR",
                     amount: Double.random(in: 0.5..<100.0),
-                    merchant: "Merchant",
+                    merchant: merchants[index - 1],
                     card: "Card 1"
                 ))
             }
