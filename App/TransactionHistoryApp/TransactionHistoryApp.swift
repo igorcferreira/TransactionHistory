@@ -38,7 +38,7 @@ struct TransactionHistoryApp: App {
 
     var body: some Scene {
         WindowGroup {
-            TransactionListView()
+            TransactionCoordinatorView()
         }
         #if targetEnvironment(simulator)
         .modelContainer(DataStorage.createMockEnvironment())
