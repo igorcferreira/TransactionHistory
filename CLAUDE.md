@@ -15,7 +15,8 @@ TransactionHistory/
 ├─ Sources/TransactionHistory/         # Main codebase, holds the data and UI layers
     ├─ Model                           # Data Models (Swift Data)
     ├─ Storage                         # Data layer, responsible for fetch/create/update helpers
-    ├─ View                            # UI layer, including View and ViewModel
+    ├─ Feature                         # UI layer, for the app features, including View and ViewModel
+    ├─ View                            # Re-usable views
     ├─ Intent                          # AppIntent layer, to interact with Shortcuts/Siri
 ├─ Tests/TransactionHistory/           # Test suit for the main codebase
 ├─ App/TransactionHistoryApp.xcodeproj # Configuration of macOS/iOS app.
