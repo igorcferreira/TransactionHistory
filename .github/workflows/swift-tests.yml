@@ -1,0 +1,60 @@
+name: Swift Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.swiftlint.yml'
+      - 'Package.swift'
+      - 'Sources/**'
+      - 'Tests/**'
+      - '.github/workflows/swift-tests.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - '.swiftlint.yml'
+      - 'Package.swift'
+      - 'Sources/**'
+      - 'Tests/**'
+      - '.github/workflows/swift-tests.yml'
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: macos-26
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Swift version
+        run: xcrun swift --version
+
+      - name: Install SwiftLint (macOS)
+        run: |
+          if ! command -v swiftlint &> /dev/null; then
+            brew install swiftlint
+          fi
+          swiftlint version
+      - name: SwiftLint (macOS)
+        run: |
+          # Run SwiftLint with GitHub annotations for PR comments
+          swiftlint lint --reporter github-actions-logging
+          # Also generate JSON report for artifacts
+          swiftlint lint --reporter json > swiftlint-results.json || true
+
+      - name: Run tests
+        run: xcrun swift test -c debug
+
+      - name: Run iOS tests
+        run: |
+          xcodebuild test -configuration Debug \
+            -scheme 'TransactionHistory' \
+            -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17'
