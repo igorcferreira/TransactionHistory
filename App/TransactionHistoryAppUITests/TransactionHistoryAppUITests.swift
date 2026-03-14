@@ -31,7 +31,7 @@ final class TransactionHistoryAppUITests: XCTestCase {
         app.launch()
 
         // Verify the mock environment is loaded with sample transactions.
-        XCTAssertTrue(app.staticTexts["Transaction 1"].waitForExistence(timeout: 5))
+        XCTAssertTrue(app.staticTexts["Transaction 9"].waitForExistence(timeout: 5))
     }
 
     @MainActor
