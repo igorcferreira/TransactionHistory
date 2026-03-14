@@ -14,6 +14,9 @@ struct TransactionListGroupView: View {
     private let sortOrder: SortOrder
     private let viewModel: TransactionListGroupViewModel
 
+    /// Called when the user taps a transaction row.
+    var onTransactionTapped: ((CardTransaction) -> Void)?
+
     private var groups: [TransactionGroup] {
         viewModel.grouped(
             transactions: transactions,
@@ -23,7 +26,8 @@ struct TransactionListGroupView: View {
 
     init(
         search: String = "",
-        sortOrder: SortOrder = .reverse
+        sortOrder: SortOrder = .reverse,
+        onTransactionTapped: ((CardTransaction) -> Void)? = nil
     ) {
         let viewModel = TransactionListGroupViewModel()
 
@@ -33,16 +37,23 @@ struct TransactionListGroupView: View {
         )
         self.sortOrder = sortOrder
         self.viewModel = viewModel
+        self.onTransactionTapped = onTransactionTapped
     }
 
     var body: some View {
         List {
             ForEach(groups) { group in
                 Section {
-                    Iterate(group.transactions.enumerated()) {
-                        ShortTransactionView(
-                            transaction: $0
-                        )
+                    Iterate(group.transactions.enumerated()) { transaction in
+                        Button {
+                            onTransactionTapped?(transaction)
+                        } label: {
+                            ShortTransactionView(
+                                transaction: transaction
+                            )
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.plain)
                     }
                 } header: {
                     Text(viewModel.sectionTitle(for: group.date))

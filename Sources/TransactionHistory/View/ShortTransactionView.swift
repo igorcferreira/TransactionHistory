@@ -24,6 +24,7 @@ struct ShortTransactionView: View {
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
         }
+        .id("transaction_\(transaction.id)")
     }
 }
 
