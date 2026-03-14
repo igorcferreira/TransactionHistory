@@ -9,8 +9,8 @@ import SwiftUI
 struct Iterate<V: Identifiable & Hashable, Content: View>: View {
     @ViewBuilder
     let contentBuilder: (V) -> Content
-    let items: Array<EnumeratedSequence<[V]>.Element>
-    
+    let items: [EnumeratedSequence<[V]>.Element]
+
     init(
         _ items: EnumeratedSequence<[V]>,
         @ViewBuilder contentBuilder: @escaping (V) -> Content
@@ -18,15 +18,15 @@ struct Iterate<V: Identifiable & Hashable, Content: View>: View {
         self.items = Array(items)
         self.contentBuilder = contentBuilder
     }
-    
+
     init(
-        _ items: Array<EnumeratedSequence<[V]>.Element>,
+        _ items: [EnumeratedSequence<[V]>.Element],
         @ViewBuilder contentBuilder: @escaping (V) -> Content
     ) {
         self.items = items
         self.contentBuilder = contentBuilder
     }
-    
+
     var body: some View {
         ForEach(items, id: \.element) { index, transaction in
             contentBuilder(transaction)
