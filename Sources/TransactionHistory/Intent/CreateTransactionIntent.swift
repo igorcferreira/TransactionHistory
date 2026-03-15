@@ -54,9 +54,10 @@ struct CreateTransactionIntent: AppIntent, Sendable {
     var card: String
     @Parameter(
         title: "Purchase date",
+        default: nil,
         requestValueDialog: "When was this transaction made?"
     )
-    var date: Date
+    var date: Date?
 
     func perform() async throws -> some ReturnsValue<TransactionEntry> {
         let card = try createTransaction(
@@ -72,7 +73,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         merchant: String,
         amount: String,
         card: String,
-        date: Date
+        date: Date?
     ) throws -> CardTransaction {
         let mapper = CurrencyMapper()
         guard let mapped = mapper.parse(amount) else {
@@ -84,7 +85,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
             amount: mapped.value,
             merchant: merchant,
             card: card,
-            createdAt: date
+            createdAt: date ?? Date()
         )
         let ctx = ModelContext(container)
         try ctx.transaction {
@@ -102,7 +103,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         merchant: String,
         amount: String,
         card: String,
-        date: Date,
+        date: Date? = nil,
         container: ModelContainer = DataStorage().sharedModelContainer
     ) async throws {
         var intent = CreateTransactionIntent(container: container)
