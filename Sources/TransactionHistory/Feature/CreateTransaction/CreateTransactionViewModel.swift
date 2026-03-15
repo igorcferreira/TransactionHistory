@@ -6,10 +6,10 @@
 //
 
 import Foundation
-import SwiftData
 
 /// ViewModel that manages form state and validation for creating a new transaction.
 @Observable
+@MainActor
 final class CreateTransactionViewModel {
 
     // MARK: - Form fields
@@ -71,23 +71,17 @@ final class CreateTransactionViewModel {
 
     // MARK: - Persistence
 
-    /// Inserts a new `CardTransaction` into the given context and saves.
-    /// Uses `date ?? Date()` so an unset date defaults to "now".
-    func save(in context: ModelContext) throws {
+    /// Creates the transaction via `CreateTransactionIntent`, which persists
+    /// the record through `DataStorage` and donates the intent to Siri.
+    func save() async throws {
         guard let amount = parsedAmount else { return }
 
-        let transaction = CardTransaction(
+        try await CreateTransactionIntent.execute(
             name: name.trimmingCharacters(in: .whitespaces),
-            currency: currency,
-            amount: amount,
             merchant: merchant.trimmingCharacters(in: .whitespaces),
+            amount: amount.formatted(.currency(code: currency)),
             card: card.trimmingCharacters(in: .whitespaces),
-            createdAt: date ?? Date()
+            date: date ?? Date()
         )
-
-        try context.transaction {
-            context.insert(transaction)
-            try context.save()
-        }
     }
 }
