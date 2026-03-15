@@ -1,0 +1,47 @@
+{
+  "fill" : {
+    "solid" : "display-p3:0.39526,0.76953,0.40015,1.00000"
+  },
+  "groups" : [
+    {
+      "layers" : [
+        {
+          "blend-mode-specializations" : [
+            {
+              "value" : "normal"
+            },
+            {
+              "appearance" : "dark",
+              "value" : "normal"
+            }
+          ],
+          "fill-specializations" : [
+            {
+              "appearance" : "dark",
+              "value" : {
+                "solid" : "display-p3:0.39526,0.76904,0.39990,1.00000"
+              }
+            }
+          ],
+          "hidden" : false,
+          "image-name" : "AppIcon-Tinted.png",
+          "name" : "AppIcon-Tinted"
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.5
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
