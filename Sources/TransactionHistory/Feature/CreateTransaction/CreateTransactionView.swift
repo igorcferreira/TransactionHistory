@@ -5,17 +5,18 @@
 //  Created by Igor Ferreira on 15/03/2026.
 //
 
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 /// Form for manually creating a new transaction, presented as a sheet.
 struct CreateTransactionView: View {
-    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @State private var viewModel = CreateTransactionViewModel()
 
     /// Controls whether the user wants to pick a custom date.
     @State private var useCustomDate = false
+    @State private var errorMessage: String?
 
     var body: some View {
         Form {
@@ -55,6 +56,7 @@ struct CreateTransactionView: View {
                 }
             }
         }
+        .toast(message: $errorMessage)
         .navigationTitle("New Transaction")
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
@@ -66,17 +68,29 @@ struct CreateTransactionView: View {
                 }
             }
             ToolbarItem(placement: .confirmationAction) {
-                Button("Save") {
-                    try? viewModel.save(in: modelContext)
-                    dismiss()
-                }
-                .disabled(!viewModel.canSave)
+                Button("Save") { save() }
+                    .disabled(!viewModel.canSave)
             }
         }
         .onChange(of: useCustomDate) {
             // Clear custom date when toggling off so save uses Date().
             if !useCustomDate {
                 viewModel.date = nil
+            }
+        }
+    }
+
+    private func save() {
+        Task {
+            do {
+                try await viewModel.save(
+                    in: modelContext.container
+                )
+                dismiss()
+            } catch {
+                withAnimation {
+                    errorMessage = error.localizedDescription
+                }
             }
         }
     }

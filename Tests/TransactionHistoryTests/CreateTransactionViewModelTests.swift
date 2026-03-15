@@ -11,20 +11,10 @@ import Testing
 @testable import TransactionHistory
 
 @Suite("CreateTransactionViewModel")
+@MainActor
 struct CreateTransactionViewModelTests {
 
     // MARK: - Helpers
-
-    /// Creates an in-memory ModelContainer with no CloudKit sync.
-    private static func makeContainer() throws -> ModelContainer {
-        let schema = Schema([CardTransaction.self])
-        let config = ModelConfiguration(
-            schema: schema,
-            isStoredInMemoryOnly: true,
-            cloudKitDatabase: .none
-        )
-        return try ModelContainer(for: schema, configurations: [config])
-    }
 
     /// Returns a view model pre-filled with valid data so individual tests
     /// can clear one field at a time.
@@ -158,20 +148,33 @@ struct CreateTransactionViewModelTests {
         #expect(viewModel.currency == expected)
     }
 
-    // MARK: - save
+    // MARK: - Helpers (save tests)
+
+    /// Creates an isolated in-memory ModelContainer for save tests.
+    private static func makeContainer() throws -> ModelContainer {
+        let schema = Schema([CardTransaction.self])
+        let config = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: true,
+            cloudKitDatabase: .none
+        )
+        return try ModelContainer(for: schema, configurations: [config])
+    }
+
+    // MARK: - save (async, persists via CreateTransactionIntent)
 
     @Test("save with nil date uses current date for createdAt")
-    func saveWithNilDateUsesNow() throws {
-        // GIVEN a valid view model with no date set
+    func saveWithNilDateUsesNow() async throws {
+        // GIVEN a valid view model with no date set and an isolated container
         let viewModel = Self.makeValidViewModel()
         viewModel.date = nil
         let container = try Self.makeContainer()
-        let context = ModelContext(container)
         // WHEN saving
         let before = Date()
-        try viewModel.save(in: context)
+        try await viewModel.save(in: container)
         let after = Date()
         // THEN the transaction's createdAt is approximately now
+        let context = ModelContext(container)
         let transactions = try context.fetch(FetchDescriptor<CardTransaction>())
         #expect(transactions.count == 1)
         let createdAt = try #require(transactions.first?.createdAt)
@@ -179,32 +182,31 @@ struct CreateTransactionViewModelTests {
     }
 
     @Test("save with explicit date uses that date for createdAt")
-    func saveWithExplicitDate() throws {
-        // GIVEN a valid view model with an explicit date
+    func saveWithExplicitDate() async throws {
+        // GIVEN a valid view model with an explicit date and an isolated container
         let viewModel = Self.makeValidViewModel()
         let explicitDate = Date(timeIntervalSince1970: 1_000_000)
         viewModel.date = explicitDate
         let container = try Self.makeContainer()
-        let context = ModelContext(container)
         // WHEN saving
-        try viewModel.save(in: context)
+        try await viewModel.save(in: container)
         // THEN the transaction's createdAt matches the explicit date
+        let context = ModelContext(container)
         let transactions = try context.fetch(FetchDescriptor<CardTransaction>())
         #expect(transactions.count == 1)
         #expect(transactions.first?.createdAt == explicitDate)
     }
 
     @Test("save inserts a transaction with correct field values")
-    func saveInsertsTransaction() throws {
-        // GIVEN a valid view model
+    func saveInsertsTransaction() async throws {
+        // GIVEN a valid view model and an isolated container
         let viewModel = Self.makeValidViewModel()
         let container = try Self.makeContainer()
-        let context = ModelContext(container)
         // WHEN saving
-        try viewModel.save(in: context)
+        try await viewModel.save(in: container)
         // THEN a transaction is inserted with matching values
+        let context = ModelContext(container)
         let transactions = try context.fetch(FetchDescriptor<CardTransaction>())
-        #expect(transactions.count == 1)
         let saved = try #require(transactions.first)
         #expect(saved.name == "Coffee")
         #expect(saved.merchant == "Coffee Corner")

@@ -4,8 +4,9 @@
 //
 //  Created by Igor Ferreira on 12/03/2026.
 //
-import Foundation
 import AppIntents
+import Foundation
+import SwiftData
 
 struct CreateTransactionIntent: AppIntent, Sendable {
     enum CreateTransactionError: LocalizedError {
@@ -21,9 +22,15 @@ struct CreateTransactionIntent: AppIntent, Sendable {
 
     static let title: LocalizedStringResource = "Create Transaction"
     static let supportedModes: IntentModes = .background
+    private let container: ModelContainer
 
-    private let mapper = CurrencyMapper()
-    private let storage = DataStorage()
+    init(container: ModelContainer) {
+        self.container = container
+    }
+
+    init() {
+        self.container = DataStorage().sharedModelContainer
+    }
 
     @Parameter(
         title: "Name",
@@ -52,11 +59,26 @@ struct CreateTransactionIntent: AppIntent, Sendable {
     var date: Date
 
     func perform() async throws -> some ReturnsValue<TransactionEntry> {
+        let card = try createTransaction(
+            name: name, merchant: merchant,
+            amount: amount, card: card, date: date
+        )
+        return .result(value: .init(card))
+    }
+
+    /// Persists a transaction in the given model context.
+    func createTransaction(
+        name: String,
+        merchant: String,
+        amount: String,
+        card: String,
+        date: Date
+    ) throws -> CardTransaction {
+        let mapper = CurrencyMapper()
         guard let mapped = mapper.parse(amount) else {
             throw CreateTransactionError.invalidAmount
         }
-
-        let card = try storage.create(
+        let transaction = CardTransaction(
             name: name,
             currency: mapped.code,
             amount: mapped.value,
@@ -64,7 +86,31 @@ struct CreateTransactionIntent: AppIntent, Sendable {
             card: card,
             createdAt: date
         )
+        let ctx = ModelContext(container)
+        try ctx.transaction {
+            ctx.insert(transaction)
+            try ctx.save()
+        }
+        return transaction
+    }
 
-        return .result(value: .init(card))
+    /// Donates the intent to Siri so it can suggest this action.
+    /// In test environments donation is skipped since the AppIntents
+    /// runtime is not available in package tests.
+    static func execute(
+        name: String,
+        merchant: String,
+        amount: String,
+        card: String,
+        date: Date,
+        container: ModelContainer = DataStorage().sharedModelContainer
+    ) async throws {
+        var intent = CreateTransactionIntent(container: container)
+        intent.name = name
+        intent.merchant = merchant
+        intent.amount = amount
+        intent.card = card
+        intent.date = date
+        _ = try await intent.callAsFunction(donate: true)
     }
 }
