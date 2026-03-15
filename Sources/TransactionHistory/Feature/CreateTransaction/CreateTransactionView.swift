@@ -5,11 +5,13 @@
 //  Created by Igor Ferreira on 15/03/2026.
 //
 
+import SwiftData
 import SwiftUI
 
 /// Form for manually creating a new transaction, presented as a sheet.
 struct CreateTransactionView: View {
     @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
     @State private var viewModel = CreateTransactionViewModel()
 
     /// Controls whether the user wants to pick a custom date.
@@ -81,7 +83,7 @@ struct CreateTransactionView: View {
     private func save() {
         Task {
             do {
-                try await viewModel.save()
+                try await viewModel.save(in: modelContext)
                 dismiss()
             } catch {
                 withAnimation {

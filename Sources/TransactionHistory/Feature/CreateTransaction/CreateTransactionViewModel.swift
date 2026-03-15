@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftData
 
 /// ViewModel that manages form state and validation for creating a new transaction.
 @Observable
@@ -72,16 +73,33 @@ final class CreateTransactionViewModel {
     // MARK: - Persistence
 
     /// Creates the transaction via `CreateTransactionIntent`, which persists
-    /// the record through `DataStorage` and donates the intent to Siri.
-    func save() async throws {
+    /// the record in the given context and donates the intent to Siri.
+    func save(in context: ModelContext) async throws {
         guard let amount = parsedAmount else { return }
 
-        try await CreateTransactionIntent.execute(
-            name: name.trimmingCharacters(in: .whitespaces),
-            merchant: merchant.trimmingCharacters(in: .whitespaces),
-            amount: amount.formatted(.currency(code: currency)),
-            card: card.trimmingCharacters(in: .whitespaces),
-            date: date ?? Date()
+        let trimmedName = name.trimmingCharacters(in: .whitespaces)
+        let trimmedMerchant = merchant.trimmingCharacters(in: .whitespaces)
+        let formattedAmount = amount.formatted(.currency(code: currency))
+        let trimmedCard = card.trimmingCharacters(in: .whitespaces)
+        let resolvedDate = date ?? Date()
+
+        // Persist in the view's context for immediate @Query updates.
+        _ = try CreateTransactionIntent.createTransaction(
+            name: trimmedName,
+            merchant: trimmedMerchant,
+            amount: formattedAmount,
+            card: trimmedCard,
+            date: resolvedDate,
+            context: context
+        )
+
+        // Donate the intent to Siri (noop in test environments).
+        try await CreateTransactionIntent.donate(
+            name: trimmedName,
+            merchant: trimmedMerchant,
+            amount: formattedAmount,
+            card: trimmedCard,
+            date: resolvedDate
         )
     }
 }
