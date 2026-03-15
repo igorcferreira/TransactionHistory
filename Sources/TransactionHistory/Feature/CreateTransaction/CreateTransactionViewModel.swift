@@ -74,7 +74,7 @@ final class CreateTransactionViewModel {
 
     /// Creates the transaction via `CreateTransactionIntent`, which persists
     /// the record in the given context and donates the intent to Siri.
-    func save(in context: ModelContext) async throws {
+    func save(in container: ModelContainer) async throws {
         guard let amount = parsedAmount else { return }
 
         let trimmedName = name.trimmingCharacters(in: .whitespaces)
@@ -83,23 +83,14 @@ final class CreateTransactionViewModel {
         let trimmedCard = card.trimmingCharacters(in: .whitespaces)
         let resolvedDate = date ?? Date()
 
-        // Persist in the view's context for immediate @Query updates.
-        _ = try CreateTransactionIntent.createTransaction(
+        // Create the transaction and donate it to Siri.
+        try await CreateTransactionIntent.execute(
             name: trimmedName,
             merchant: trimmedMerchant,
             amount: formattedAmount,
             card: trimmedCard,
             date: resolvedDate,
-            context: context
-        )
-
-        // Donate the intent to Siri (noop in test environments).
-        try await CreateTransactionIntent.donate(
-            name: trimmedName,
-            merchant: trimmedMerchant,
-            amount: formattedAmount,
-            card: trimmedCard,
-            date: resolvedDate
+            container: container
         )
     }
 }

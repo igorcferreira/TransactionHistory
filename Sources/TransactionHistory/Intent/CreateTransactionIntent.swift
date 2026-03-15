@@ -22,9 +22,15 @@ struct CreateTransactionIntent: AppIntent, Sendable {
 
     static let title: LocalizedStringResource = "Create Transaction"
     static let supportedModes: IntentModes = .background
+    private let container: ModelContainer
 
-    /// Default model context from the shared DataStorage container.
-    private static var defaultContext: ModelContext { DataStorage().modelContext }
+    init(container: ModelContainer) {
+        self.container = container
+    }
+
+    init() {
+        self.container = DataStorage().sharedModelContainer
+    }
 
     @Parameter(
         title: "Name",
@@ -52,30 +58,8 @@ struct CreateTransactionIntent: AppIntent, Sendable {
     )
     var date: Date
 
-    /// Creates and persists a transaction, then donates the intent to Siri.
-    /// - Parameter context: The model context used for persistence.
-    ///   Defaults to a context from the shared `DataStorage` container.
-    static func execute(
-        name: String,
-        merchant: String,
-        amount: String,
-        card: String,
-        date: Date,
-        context: ModelContext = defaultContext
-    ) async throws {
-        _ = try createTransaction(
-            name: name, merchant: merchant,
-            amount: amount, card: card, date: date,
-            context: context
-        )
-        try await donate(
-            name: name, merchant: merchant,
-            amount: amount, card: card, date: date
-        )
-    }
-
     func perform() async throws -> some ReturnsValue<TransactionEntry> {
-        let card = try Self.createTransaction(
+        let card = try createTransaction(
             name: name, merchant: merchant,
             amount: amount, card: card, date: date
         )
@@ -83,14 +67,12 @@ struct CreateTransactionIntent: AppIntent, Sendable {
     }
 
     /// Persists a transaction in the given model context.
-    @discardableResult
-    static func createTransaction(
+    func createTransaction(
         name: String,
         merchant: String,
         amount: String,
         card: String,
-        date: Date,
-        context: ModelContext = defaultContext
+        date: Date
     ) throws -> CardTransaction {
         let mapper = CurrencyMapper()
         guard let mapped = mapper.parse(amount) else {
@@ -104,9 +86,10 @@ struct CreateTransactionIntent: AppIntent, Sendable {
             card: card,
             createdAt: date
         )
-        try context.transaction {
-            context.insert(transaction)
-            try context.save()
+        let ctx = ModelContext(container)
+        try ctx.transaction {
+            ctx.insert(transaction)
+            try ctx.save()
         }
         return transaction
     }
@@ -114,15 +97,15 @@ struct CreateTransactionIntent: AppIntent, Sendable {
     /// Donates the intent to Siri so it can suggest this action.
     /// In test environments donation is skipped since the AppIntents
     /// runtime is not available in package tests.
-    static func donate(
+    static func execute(
         name: String,
         merchant: String,
         amount: String,
         card: String,
-        date: Date
+        date: Date,
+        container: ModelContainer = DataStorage().sharedModelContainer
     ) async throws {
-        guard !ProcessInfo.isTest else { return }
-        var intent = CreateTransactionIntent()
+        var intent = CreateTransactionIntent(container: container)
         intent.name = name
         intent.merchant = merchant
         intent.amount = amount

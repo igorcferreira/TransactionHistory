@@ -83,7 +83,9 @@ struct CreateTransactionView: View {
     private func save() {
         Task {
             do {
-                try await viewModel.save(in: modelContext)
+                try await viewModel.save(
+                    in: modelContext.container
+                )
                 dismiss()
             } catch {
                 withAnimation {
