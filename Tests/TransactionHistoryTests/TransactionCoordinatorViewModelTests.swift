@@ -46,6 +46,26 @@ struct TransactionCoordinatorViewModelTests {
         #expect(viewModel.path.count == 1)
     }
 
+    // MARK: - showCreateTransaction
+
+    @Test("isAddingTransaction is false on init")
+    func initialIsAddingTransactionIsFalse() {
+        // GIVEN a new coordinator view model
+        let viewModel = TransactionCoordinatorViewModel()
+        // THEN isAddingTransaction is false
+        #expect(!viewModel.isAddingTransaction)
+    }
+
+    @Test("showCreateTransaction sets isAddingTransaction to true")
+    func showCreateTransactionSetsFlag() {
+        // GIVEN an empty coordinator
+        let viewModel = TransactionCoordinatorViewModel()
+        // WHEN showing the create transaction sheet
+        viewModel.showCreateTransaction()
+        // THEN isAddingTransaction is true
+        #expect(viewModel.isAddingTransaction)
+    }
+
     // MARK: - popToRoot
 
     @Test("popToRoot clears the navigation path")

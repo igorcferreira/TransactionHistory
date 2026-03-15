@@ -14,11 +14,15 @@ public struct TransactionListView: View {
 
     /// Called when the user taps a transaction in the list.
     var onTransactionTapped: ((CardTransaction) -> Void)?
+    /// Called when the user taps the add button in the toolbar.
+    var onAddTapped: (() -> Void)?
 
     public init(
-        onTransactionTapped: ((CardTransaction) -> Void)? = nil
+        onTransactionTapped: ((CardTransaction) -> Void)? = nil,
+        onAddTapped: (() -> Void)? = nil
     ) {
         self.onTransactionTapped = onTransactionTapped
+        self.onAddTapped = onAddTapped
     }
 
     public var body: some View {
@@ -32,6 +36,15 @@ public struct TransactionListView: View {
                 sortOrder: viewModel.sortOrder,
                 onTransactionTapped: onTransactionTapped
             )
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    onAddTapped?()
+                } label: {
+                    Label("Add Transaction", systemImage: "plus")
+                }
+            }
         }
     }
 }

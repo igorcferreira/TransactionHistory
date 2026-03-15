@@ -16,10 +16,16 @@ public struct TransactionCoordinatorView: View {
     public var body: some View {
         NavigationStack(path: $viewModel.path) {
             TransactionListView(
-                onTransactionTapped: viewModel.showDetail
+                onTransactionTapped: viewModel.showDetail,
+                onAddTapped: viewModel.showCreateTransaction
             )
             .navigationDestination(for: CardTransaction.self) { transaction in
                 TransactionDetailView(transaction: transaction)
+            }
+            .sheet(isPresented: $viewModel.isAddingTransaction) {
+                NavigationStack {
+                    CreateTransactionView()
+                }
             }
         }
     }
