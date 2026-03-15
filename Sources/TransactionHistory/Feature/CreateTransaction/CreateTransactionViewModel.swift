@@ -17,7 +17,7 @@ final class CreateTransactionViewModel {
     var name: String = ""
     var merchant: String = ""
     var amountText: String = ""
-    var currency: String = Locale.current.currency?.identifier ?? "USD"
+    var currency: String = Locale.current.currency?.identifier ?? "EUR"
     var card: String = ""
     var date: Date?
 
