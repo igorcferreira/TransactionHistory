@@ -126,7 +126,8 @@ private extension DataStorage {
                     amount: Double.random(in: 0.5..<100.0),
                     merchant: merchants[index - 1],
                     card: "Card 1",
-                    createdAt: date
+                    category: EntryCategory.allCases.randomElement() ?? .generic,
+                    createdAt: date,
                 ))
             }
             try context.save()

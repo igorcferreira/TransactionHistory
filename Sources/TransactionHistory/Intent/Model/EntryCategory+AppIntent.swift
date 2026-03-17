@@ -7,19 +7,9 @@
 import Foundation
 import AppIntents
 
-enum EntryCategory: String, Sendable {
-    case food
-    case shopping
-    case travel
-    case services
-    case entertrainment
-    case health
-    case transport
-}
-
 extension EntryCategory: AppEnum {
-    static let typeDisplayRepresentation: TypeDisplayRepresentation = "Category"
-    static var caseDisplayRepresentations: [EntryCategory: DisplayRepresentation] {
+    public static let typeDisplayRepresentation: TypeDisplayRepresentation = "Category"
+    public static var caseDisplayRepresentations: [EntryCategory: DisplayRepresentation] {
         [
             .food: "Food & Drink",
             .shopping: "Shopping",
@@ -27,7 +17,8 @@ extension EntryCategory: AppEnum {
             .services: "Services",
             .entertrainment: "Entertainment",
             .health: "Health & Wellness",
-            .transport: "Transport"
+            .transport: "Transport",
+            .generic: "Generic"
         ]
     }
 }

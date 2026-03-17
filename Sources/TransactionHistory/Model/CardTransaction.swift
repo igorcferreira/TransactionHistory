@@ -9,6 +9,17 @@ import SwiftData
 
 @Model
 public final class CardTransaction: Identifiable {
+    
+    #Index<CardTransaction>(
+        [\.createdAt],
+        [\.category],
+        [\.category, \.createdAt],
+        [\.currency],
+        [\.currency, \.createdAt],
+        [\.merchant],
+        [\.merchant, \.createdAt],
+    )
+    
     public var id: UUID = UUID()
     public var name: String = ""
     public var currency: String = ""
@@ -16,6 +27,7 @@ public final class CardTransaction: Identifiable {
     public var merchant: String = ""
     public var card: String = ""
     public var createdAt: Date = Date()
+    public var category: EntryCategory = EntryCategory.generic
 
     /// Locale-formatted string combining currency and amount (e.g. "€12.34").
     var formattedAmount: String {
@@ -29,6 +41,7 @@ public final class CardTransaction: Identifiable {
         amount: Double,
         merchant: String,
         card: String,
+        category: EntryCategory,
         createdAt: Date = Date()
     ) {
         self.id = id

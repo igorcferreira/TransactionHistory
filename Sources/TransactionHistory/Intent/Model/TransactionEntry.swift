@@ -11,17 +11,20 @@ struct TransactionEntry: Sendable, Identifiable {
     var id: UUID
     var name: String
     var amount: String
+    var category: EntryCategory
 
-    init(id: UUID, name: String, amount: String) {
+    init(id: UUID, name: String, amount: String, category: EntryCategory) {
         self.id = id
         self.name = name
         self.amount = amount
+        self.category = category
     }
 
     init(_ card: CardTransaction) {
         self.id = card.id
         self.name = card.name
         self.amount = card.formattedAmount
+        self.category = card.category
     }
 }
 

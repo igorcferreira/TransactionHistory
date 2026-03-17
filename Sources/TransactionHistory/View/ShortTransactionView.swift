@@ -34,6 +34,7 @@ struct ShortTransactionView: View {
         currency: "EUR",
         amount: 12.34,
         merchant: "A nice merchant",
-        card: "Virtual Card"
+        card: "Virtual Card",
+        category: .generic
     ))
 }

@@ -58,11 +58,18 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         requestValueDialog: "When was this transaction made?"
     )
     var date: Date?
+    @Parameter(
+        title: "Category",
+        default: nil,
+        requestValueDialog: "What is the category of the purchase?"
+    )
+    var category: EntryCategory?
 
     func perform() async throws -> some ReturnsValue<TransactionEntry> {
         let card = try createTransaction(
             name: name, merchant: merchant,
-            amount: amount, card: card, date: date
+            amount: amount, card: card, category: category ?? .generic,
+            date: date
         )
         return .result(value: .init(card))
     }
@@ -73,6 +80,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         merchant: String,
         amount: String,
         card: String,
+        category: EntryCategory,
         date: Date?
     ) throws -> CardTransaction {
         let mapper = CurrencyMapper()
@@ -85,6 +93,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
             amount: mapped.value,
             merchant: merchant,
             card: card,
+            category: category,
             createdAt: date ?? Date()
         )
         let ctx = ModelContext(container)
@@ -103,6 +112,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         merchant: String,
         amount: String,
         card: String,
+        category: EntryCategory? = nil,
         date: Date? = nil,
         container: ModelContainer = DataStorage().sharedModelContainer
     ) async throws {
@@ -112,6 +122,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         intent.amount = amount
         intent.card = card
         intent.date = date
+        intent.category = category
         _ = try await intent.callAsFunction(donate: true)
     }
 }

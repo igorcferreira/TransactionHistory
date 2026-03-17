@@ -21,6 +21,7 @@ struct TransactionDetailView: View {
                 LabeledContent("Currency", value: viewModel.transaction.currency)
             }
             Section("Details") {
+                LabeledContent("Category", value: viewModel.category)
                 LabeledContent("Merchant", value: viewModel.transaction.merchant)
                 LabeledContent("Card", value: viewModel.transaction.card)
                 LabeledContent("Date", value: viewModel.formattedDate)
@@ -37,7 +38,8 @@ struct TransactionDetailView: View {
             currency: "EUR",
             amount: 4.50,
             merchant: "Coffee Corner",
-            card: "Virtual Card"
+            card: "Virtual Card",
+            category: .generic
         ))
     }
 }
