@@ -1,29 +1,9 @@
 # Transaction History
 
-## 🎯 What is PostPortuguese?
+SwiftUI multi-platform (macOS/iOS) app for managing payment transactions.
+MVVM + Coordinator architecture with SwiftData persistence.
 
-`Transaction History` is a SwiftUI multi-platform (macOS/iOS) 
-which allows the user to manage payment transactions.
-
-## 🏗️ Architecture
-
-### Project Structure
-
-```text
-TransactionHistory/
-├─ Package.swift                       # Swift package configuration
-├─ Sources/TransactionHistory/         # Main codebase, holds the data and UI layers
-    ├─ Model                           # Data Models (Swift Data)
-    ├─ Storage                         # Data layer, responsible for fetch/create/update helpers
-    ├─ Feature                         # UI layer, for the app features, including View and ViewModel
-    ├─ View                            # Re-usable views
-    ├─ Intent                          # AppIntent layer, to interact with Shortcuts/Siri
-├─ Tests/TransactionHistory/           # Test suit for the main codebase
-├─ App/TransactionHistoryApp.xcodeproj # Configuration of macOS/iOS app.
-├─ App/TransactionHistoryApp/          # macOS/iOS app entrypoint. Mostly empty.
-├─ App/TransactionHistoryAppTests/     # Unit test suit for the app.
-├─ App/TransactionHistoryAppUITests/   # Interface test suit for the app.
-```
+> For architecture, patterns, and codebase map see `.claude/` (agents, skills, memory, workflows, index).
 
 ## **⚠️ Definition of Done:** A feature or change is only complete when **all three** checks pass:
 1. macOS package tests
@@ -137,36 +117,23 @@ SwiftLint also runs automatically as an Xcode build phase on the TransactionHist
 
 **Never run git operations in parallel.** All git commands must be strictly sequential.
 
-## **✅ ALWAYS DO:**
+## Knowledge Base
 
-1. **🏆 Follow project structure**
-   - Ensure that the project structure is respected
-   - Logic related to posting and network infrastructure must be placed on [acaraje](acaraje) package
+Reference `.claude/` for detailed context:
 
-2. **🎯 Create maintainable code**
-   - Include logical comments in the generated code
-   - Keep low complexity functions, as much as possible
-   - Follow a MVVM+Coordinators architecture for the UI layers and simple clean architecture for the other layers
-   - Keep the code simple
+- **New feature** → `.claude/workflows/create-feature.md`
+- **Code review** → `.claude/workflows/review-pr.md`
+- **Architecture** → `.claude/skills/ios-architecture.md`
+- **Codebase map** → `.claude/index.md`
+- **Project patterns** → `.claude/memory/known-patterns.md`
 
-3. **📋 MAP quality standards**
-   - Minimum Awesome Product always
-   - Type-safe code generation
-   - Professional error messages
-   - Zero compilation errors
+## Rules
 
-## **❌ NEVER DO:**
-
-1. **🚨 Marketing over reality**
-   - Real technical status always
-   - Document known issues openly
-   - Progress metrics must be honest
-
-2. **🚨 Skip compilation testing**
-   - Generated code must compile without errors
-   - Test both white-label app and Swift Packages
-
-3. **🚨 Custom test frameworks**
-   - Give preference to unit tests
-   - NO custom matchers or BDD libraries
-   - Follow GIVEN-WHEN-THEN standard
+- Generated code must compile with zero errors on both platforms
+- Follow MVVM + Coordinator architecture (details in `.claude/skills/ios-architecture.md`)
+- Keep functions simple and low-complexity
+- Include logical comments in generated code
+- Use GIVEN-WHEN-THEN for tests — no custom matchers or BDD libraries
+- Professional error messages — type-safe, user-facing
+- Be honest about technical status — document known issues openly
+- Never silently adjust `.swiftlint.yml` — ask the user first
