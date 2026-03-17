@@ -33,7 +33,7 @@ As the app grows, networking may be introduced for:
 
 ### Guidelines for When Networking Is Added
 
-Per the project's CLAUDE.md, networking and infrastructure code should be placed in a separate package (referenced as "acaraje"). When that time comes:
+Per the project's CLAUDE.md, networking and infrastructure code should be placed in a separate package. When that time comes:
 
 1. Network layer lives in its own Swift Package, not in `TransactionHistory`.
 2. The main package depends on the network package for API models and client protocols.
