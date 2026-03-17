@@ -12,8 +12,8 @@ public final class CardTransaction: Identifiable {
     
     #Index<CardTransaction>(
         [\.createdAt],
-        [\.category],
-        [\.category, \.createdAt],
+        [\.categoryRawType],
+        [\.categoryRawType, \.createdAt],
         [\.currency],
         [\.currency, \.createdAt],
         [\.merchant],
@@ -27,7 +27,13 @@ public final class CardTransaction: Identifiable {
     public var merchant: String = ""
     public var card: String = ""
     public var createdAt: Date = Date()
-    public var category: EntryCategory = EntryCategory.generic
+    public var categoryRawType: String = EntryCategory.generic.rawValue
+    
+    @Transient
+    public var category: EntryCategory {
+        get { .init(rawValue: categoryRawType) ?? .generic }
+        set { categoryRawType = newValue.rawValue }
+    }
 
     /// Locale-formatted string combining currency and amount (e.g. "€12.34").
     var formattedAmount: String {

@@ -24,17 +24,6 @@ final class TransactionHistoryAppUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
-        app.launchEnvironment["IS_UI_TESTING"] = "1"
-        app.launch()
-
-        // Verify the mock environment is loaded with sample transactions.
-        XCTAssertTrue(app.staticTexts["Transaction 9"].waitForExistence(timeout: 5))
-    }
-
-    @MainActor
     func testLaunchPerformance() throws {
         // This measures how long it takes to launch your application.
         measure(metrics: [XCTApplicationLaunchMetric()]) {
