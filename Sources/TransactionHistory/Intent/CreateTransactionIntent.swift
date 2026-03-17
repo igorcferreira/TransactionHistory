@@ -116,7 +116,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         date: Date? = nil,
         container: ModelContainer = DataStorage().sharedModelContainer
     ) async throws {
-        var intent = CreateTransactionIntent(container: container)
+        let intent = CreateTransactionIntent(container: container)
         intent.name = name
         intent.merchant = merchant
         intent.amount = amount

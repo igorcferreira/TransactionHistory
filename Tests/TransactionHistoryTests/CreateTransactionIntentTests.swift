@@ -48,6 +48,7 @@ struct CreateTransactionIntentTests {
             merchant: "Bistro",
             amount: "€12.50",
             card: "Visa",
+            category: .generic,
             date: date
         )
         // THEN the returned object has the expected values
@@ -70,6 +71,7 @@ struct CreateTransactionIntentTests {
             merchant: "FreshMart",
             amount: "$45.00",
             card: "Mastercard",
+            category: .generic,
             date: Date()
         )
         // THEN the transaction is retrievable from the container
@@ -92,6 +94,7 @@ struct CreateTransactionIntentTests {
                 merchant: "Store",
                 amount: "not-a-number",
                 card: "Card",
+                category: .generic,
                 date: Date()
             )
         }
@@ -105,15 +108,15 @@ struct CreateTransactionIntentTests {
         // WHEN creating multiple transactions
         _ = try intent.createTransaction(
             name: "First", merchant: "A", amount: "€1.00",
-            card: "Card", date: Date()
+            card: "Card", category: .generic, date: Date()
         )
         _ = try intent.createTransaction(
             name: "Second", merchant: "B", amount: "$2.00",
-            card: "Card", date: Date()
+            card: "Card", category: .generic, date: Date()
         )
         _ = try intent.createTransaction(
             name: "Third", merchant: "C", amount: "£3.00",
-            card: "Card", date: Date()
+            card: "Card", category: .generic, date: Date()
         )
         // THEN all three are present in the container
         let all = try Self.fetchAll(from: container)

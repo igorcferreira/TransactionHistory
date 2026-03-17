@@ -24,6 +24,7 @@ struct TransactionDetailViewModelTests {
             amount: amount,
             merchant: "Test Merchant",
             card: "Test Card",
+            category: .generic,
             createdAt: createdAt
         )
     }

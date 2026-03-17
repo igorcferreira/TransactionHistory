@@ -60,6 +60,7 @@ struct TransactionListViewSortTests {
             amount: 4.50,
             merchant: "Coffee Corner",
             card: "Card",
+            category: .generic,
             createdAt: today
         )
         let tech = CardTransaction(
@@ -68,6 +69,7 @@ struct TransactionListViewSortTests {
             amount: 12.99,
             merchant: "TechStore",
             card: "Card",
+            category: .generic,
             createdAt: yesterday
         )
         try seed([coffee, tech], in: container)
@@ -87,7 +89,7 @@ struct TransactionListViewSortTests {
     private static func renderedTransactionNames(
         from inspected: InspectableView<ViewType.ClassifiedView>
     ) throws -> [String] {
-        let buttons = try inspected.findAll(ViewType.Button.self)
+        let buttons = inspected.findAll(ViewType.Button.self)
         return try buttons.map { button in
             let texts = try button.labelView().findAll(ViewType.Text.self)
             return try texts[0].string()
@@ -98,7 +100,7 @@ struct TransactionListViewSortTests {
     private static func renderedMerchantNames(
         from inspected: InspectableView<ViewType.ClassifiedView>
     ) throws -> [String] {
-        let buttons = try inspected.findAll(ViewType.Button.self)
+        let buttons = inspected.findAll(ViewType.Button.self)
         return try buttons.map { button in
             let texts = try button.labelView().findAll(ViewType.Text.self)
             return try texts[1].string()
@@ -109,7 +111,7 @@ struct TransactionListViewSortTests {
     private static func renderedSectionHeaders(
         from inspected: InspectableView<ViewType.ClassifiedView>
     ) throws -> [String] {
-        let sections = try inspected.findAll(ViewType.Section.self)
+        let sections = inspected.findAll(ViewType.Section.self)
         return try sections.map { section in
             try section.header().find(ViewType.Text.self).string()
         }
@@ -179,6 +181,7 @@ struct TransactionListViewSortTests {
             amount: 4.50,
             merchant: "Coffee Corner",
             card: "Card",
+            category: .generic,
             createdAt: today
         )
         let afternoonCoffee = CardTransaction(
@@ -187,6 +190,7 @@ struct TransactionListViewSortTests {
             amount: 3.20,
             merchant: "Coffee Corner",
             card: "Card",
+            category: .generic,
             createdAt: yesterday
         )
         let usbCable = CardTransaction(
@@ -195,6 +199,7 @@ struct TransactionListViewSortTests {
             amount: 12.99,
             merchant: "TechStore",
             card: "Card",
+            category: .generic,
             createdAt: yesterday
         )
         try Self.seed(
@@ -235,6 +240,7 @@ struct TransactionListViewSortTests {
             amount: 4.50,
             merchant: "Coffee Corner",
             card: "Card",
+            category: .generic,
             createdAt: today
         )
         let afternoonCoffee = CardTransaction(
@@ -243,6 +249,7 @@ struct TransactionListViewSortTests {
             amount: 3.20,
             merchant: "Coffee Corner",
             card: "Card",
+            category: .generic,
             createdAt: yesterday
         )
         let usbCable = CardTransaction(
@@ -251,6 +258,7 @@ struct TransactionListViewSortTests {
             amount: 12.99,
             merchant: "TechStore",
             card: "Card",
+            category: .generic,
             createdAt: yesterday
         )
         try Self.seed(
@@ -287,6 +295,7 @@ struct TransactionListViewSortTests {
             amount: 1.00,
             merchant: "Shop A",
             card: "Card",
+            category: .generic,
             createdAt: today
         )
         let second = CardTransaction(
@@ -295,6 +304,7 @@ struct TransactionListViewSortTests {
             amount: 2.00,
             merchant: "Shop B",
             card: "Card",
+            category: .generic,
             createdAt: today
         )
         try Self.seed([first, second], in: container)

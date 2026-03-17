@@ -46,6 +46,7 @@ struct DataStorageTests {
                 amount: Double(index) + 1.0,
                 merchant: "Merchant",
                 card: "Card",
+                category: .generic,
                 createdAt: Date(timeIntervalSince1970: TimeInterval(index * 60))
             )
             context.insert(transaction)

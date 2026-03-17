@@ -19,7 +19,8 @@ struct TransactionCoordinatorViewModelTests {
             currency: "EUR",
             amount: 1.0,
             merchant: "Merchant",
-            card: "Card"
+            card: "Card",
+            category: .generic
         )
     }
 

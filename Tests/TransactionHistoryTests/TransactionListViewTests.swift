@@ -58,6 +58,7 @@ struct TransactionListViewTests {
             amount: 4.50,
             merchant: "Coffee Corner",
             card: "Card",
+            category: .generic,
             createdAt: today
         )
         let tech = CardTransaction(
@@ -66,6 +67,7 @@ struct TransactionListViewTests {
             amount: 12.99,
             merchant: "TechStore",
             card: "Card",
+            category: .generic,
             createdAt: yesterday
         )
         try seed([coffee, tech], in: container)
@@ -89,7 +91,7 @@ struct TransactionListViewTests {
     private static func renderedTransactionNames(
         from inspected: InspectableView<ViewType.ClassifiedView>
     ) throws -> [String] {
-        let buttons = try inspected.findAll(ViewType.Button.self)
+        let buttons = inspected.findAll(ViewType.Button.self)
         return try buttons.map { button in
             let texts = try button.labelView().findAll(ViewType.Text.self)
             return try texts[0].string()
@@ -101,7 +103,7 @@ struct TransactionListViewTests {
     private static func renderedMerchantNames(
         from inspected: InspectableView<ViewType.ClassifiedView>
     ) throws -> [String] {
-        let buttons = try inspected.findAll(ViewType.Button.self)
+        let buttons = inspected.findAll(ViewType.Button.self)
         return try buttons.map { button in
             let texts = try button.labelView().findAll(ViewType.Text.self)
             return try texts[1].string()
@@ -112,7 +114,7 @@ struct TransactionListViewTests {
     private static func renderedSectionHeaders(
         from inspected: InspectableView<ViewType.ClassifiedView>
     ) throws -> [String] {
-        let sections = try inspected.findAll(ViewType.Section.self)
+        let sections = inspected.findAll(ViewType.Section.self)
         return try sections.map { section in
             try section.header().find(ViewType.Text.self).string()
         }
