@@ -25,7 +25,7 @@ final class TransactionDetailViewModel {
     var category: String {
         .init(localized: .init(stringLiteral: transaction.category.rawValue.capitalized))
     }
-    
+
     /// Locale-formatted currency string delegated to the model.
     var formattedAmount: String {
         transaction.formattedAmount

@@ -9,7 +9,7 @@ import SwiftData
 
 @Model
 public final class CardTransaction: Identifiable {
-    
+
     #Index<CardTransaction>(
         [\.createdAt],
         [\.categoryRawType],
@@ -19,7 +19,7 @@ public final class CardTransaction: Identifiable {
         [\.merchant],
         [\.merchant, \.createdAt],
     )
-    
+
     public var id: UUID = UUID()
     public var name: String = ""
     public var currency: String = ""
@@ -28,7 +28,7 @@ public final class CardTransaction: Identifiable {
     public var card: String = ""
     public var createdAt: Date = Date()
     public var categoryRawType: String = EntryCategory.generic.rawValue
-    
+
     @Transient
     public var category: EntryCategory {
         get { .init(rawValue: categoryRawType) ?? .generic }
