@@ -5,6 +5,7 @@
 //  Created by Igor Ferreira on 12/03/2026.
 //
 import Foundation
+import Logging
 import SwiftData
 
 extension ProcessInfo {
@@ -18,6 +19,8 @@ extension ProcessInfo {
 }
 
 public struct DataStorage: Sendable {
+    private static let logger = AppLogger.makeLogger(label: "storage.dataStorage")
+
     var modelContext: ModelContext {
         ModelContext(sharedModelContainer)
     }
@@ -40,6 +43,7 @@ public struct DataStorage: Sendable {
 
     public init() {
         self.sharedModelContainer = Self.shared
+        Self.logger.debug("Initialized shared data storage")
     }
 
     /// Internal init for testing with a custom container.
@@ -54,13 +58,29 @@ public struct DataStorage: Sendable {
             ]
         )
         descriptor.fetchLimit = 10
-        return try modelContext.fetch(descriptor)
+        let transactions = try modelContext.fetch(descriptor)
+        Self.logger.debug(
+            "Fetched top transactions",
+            metadata: [
+                "resultCount": "\(transactions.count)",
+                "fetchLimit": "10"
+            ]
+        )
+        return transactions
     }
 
     func with(ids: [UUID]) throws -> [CardTransaction] {
-        try modelContext.fetch(FetchDescriptor<CardTransaction>(
+        let transactions = try modelContext.fetch(FetchDescriptor<CardTransaction>(
             predicate: #Predicate { item in ids.contains(item.id) }
         ))
+        Self.logger.debug(
+            "Fetched transactions by identifiers",
+            metadata: [
+                "requestedCount": "\(ids.count)",
+                "resultCount": "\(transactions.count)"
+            ]
+        )
+        return transactions
     }
 }
 
@@ -69,6 +89,13 @@ private extension DataStorage {
         memoryOnly: Bool,
         group: String = "group.dev.igorcferreira.TransactionHistoryApp"
     ) -> ModelContainer {
+        Self.logger.info(
+            "Creating model container",
+            metadata: [
+                "memoryOnly": "\(memoryOnly)",
+                "groupContainer": "\(memoryOnly ? "automatic" : group)"
+            ]
+        )
         let schema = Schema([
             CardTransaction.self
         ])
@@ -88,6 +115,13 @@ private extension DataStorage {
                 configurations: [modelConfiguration]
             )
         } catch {
+            Self.logger.critical(
+                "Failed to create model container",
+                metadata: [
+                    "memoryOnly": "\(memoryOnly)",
+                    "error": "\(error)"
+                ]
+            )
             fatalError("Could not create ModelContainer: \(error)")
         }
 
@@ -112,25 +146,33 @@ private extension DataStorage {
         let now = Date()
         let calendar = Calendar.current
 
-        try? context.transaction {
-            for index in (1..<10) {
-                // Spread transactions across the last 5 days.
-                let daysAgo = (index - 1) * 5 / 9
-                let date = calendar.date(
-                    byAdding: .day, value: -daysAgo, to: now
-                ) ?? now
+        do {
+            try context.transaction {
+                for index in (1..<10) {
+                    // Spread transactions across the last 5 days.
+                    let daysAgo = (index - 1) * 5 / 9
+                    let date = calendar.date(
+                        byAdding: .day, value: -daysAgo, to: now
+                    ) ?? now
 
-                context.insert(CardTransaction(
-                    name: "Transaction \(index)",
-                    currency: "EUR",
-                    amount: Double.random(in: 0.5..<100.0),
-                    merchant: merchants[index - 1],
-                    card: "Card 1",
-                    category: EntryCategory.allCases.randomElement() ?? .generic,
-                    createdAt: date,
-                ))
+                    context.insert(CardTransaction(
+                        name: "Transaction \(index)",
+                        currency: "EUR",
+                        amount: Double.random(in: 0.5..<100.0),
+                        merchant: merchants[index - 1],
+                        card: "Card 1",
+                        category: EntryCategory.allCases.randomElement() ?? .generic,
+                        createdAt: date,
+                    ))
+                }
+                try context.save()
             }
-            try context.save()
+            Self.logger.debug("Seeded mock transaction data", metadata: ["count": "9"])
+        } catch {
+            Self.logger.error(
+                "Failed to seed mock transaction data",
+                metadata: ["error": "\(error)"]
+            )
         }
     }
 }

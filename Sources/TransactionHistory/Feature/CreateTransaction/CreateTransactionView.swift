@@ -12,6 +12,7 @@ import SwiftUI
 struct CreateTransactionView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.transactionHistoryLogger) private var logger
     @State private var viewModel = CreateTransactionViewModel()
 
     /// Controls whether the user wants to pick a custom date.
@@ -19,6 +20,8 @@ struct CreateTransactionView: View {
     @State private var errorMessage: String?
 
     var body: some View {
+        let createLogger = logger.scoped("feature.createTransaction")
+
         Form {
             Section("Transaction") {
                 TextField("Name", text: $viewModel.name)
@@ -64,6 +67,7 @@ struct CreateTransactionView: View {
         .toolbar {
             ToolbarItem(placement: .cancellationAction) {
                 Button("Cancel") {
+                    createLogger.info("Cancelled manual transaction creation")
                     dismiss()
                 }
             }
@@ -77,17 +81,32 @@ struct CreateTransactionView: View {
             if !useCustomDate {
                 viewModel.date = nil
             }
+            createLogger.debug(
+                "Toggled custom date",
+                metadata: ["enabled": "\(useCustomDate)"]
+            )
+        }
+        .onAppear {
+            createLogger.info("Create transaction form displayed")
         }
     }
 
     private func save() {
+        let createLogger = logger.scoped("feature.createTransaction")
+
         Task {
             do {
                 try await viewModel.save(
-                    in: modelContext.container
+                    in: modelContext.container,
+                    logger: createLogger
                 )
+                createLogger.info("Dismissing create transaction form after save")
                 dismiss()
             } catch {
+                createLogger.error(
+                    "Failed to save manual transaction",
+                    metadata: ["error": "\(error)"]
+                )
                 withAnimation {
                     errorMessage = error.localizedDescription
                 }

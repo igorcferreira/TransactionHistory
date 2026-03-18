@@ -6,9 +6,19 @@
 //
 import AppIntents
 import Foundation
+import Logging
 import SwiftData
 
 struct CreateTransactionIntent: AppIntent, Sendable {
+    struct CreateTransactionRequest: Sendable {
+        let name: String
+        let merchant: String
+        let amount: String
+        let card: String
+        let category: EntryCategory
+        let date: Date?
+    }
+
     enum CreateTransactionError: LocalizedError {
         case invalidAmount
 
@@ -23,13 +33,19 @@ struct CreateTransactionIntent: AppIntent, Sendable {
     static let title: LocalizedStringResource = "Create Transaction"
     static let supportedModes: IntentModes = .background
     private let container: ModelContainer
+    private let logger: Logger
 
-    init(container: ModelContainer) {
+    init(
+        container: ModelContainer,
+        logger: Logger = AppLogger.makeLogger(label: "intent.createTransaction")
+    ) {
         self.container = container
+        self.logger = logger
     }
 
     init() {
         self.container = DataStorage().sharedModelContainer
+        self.logger = AppLogger.makeLogger(label: "intent.createTransaction")
     }
 
     @Parameter(
@@ -66,41 +82,69 @@ struct CreateTransactionIntent: AppIntent, Sendable {
     var category: EntryCategory?
 
     func perform() async throws -> some ReturnsValue<TransactionEntry> {
-        let card = try createTransaction(
-            name: name, merchant: merchant,
-            amount: amount, card: card, category: category ?? .generic,
+        logger.info(
+            "Performing create transaction intent",
+            metadata: [
+                "hasCustomDate": "\(date != nil)",
+                "category": "\((category ?? .generic).rawValue)"
+            ]
+        )
+        let card = try createTransaction(.init(
+            name: name,
+            merchant: merchant,
+            amount: amount,
+            card: card,
+            category: category ?? .generic,
             date: date
+        ))
+        logger.info(
+            "Create transaction intent completed",
+            metadata: ["transactionID": "\(card.id.uuidString)"]
         )
         return .result(value: .init(card))
     }
 
     /// Persists a transaction in the given model context.
     func createTransaction(
-        name: String,
-        merchant: String,
-        amount: String,
-        card: String,
-        category: EntryCategory,
-        date: Date?
+        _ request: CreateTransactionRequest
     ) throws -> CardTransaction {
         let mapper = CurrencyMapper()
-        guard let mapped = mapper.parse(amount) else {
+        guard let mapped = mapper.parse(request.amount) else {
+            logger.warning(
+                "Rejected transaction creation because amount parsing failed",
+                metadata: [
+                    "merchant": "\(request.merchant)",
+                    "amountInputLength": "\(request.amount.count)",
+                    "category": "\(request.category.rawValue)"
+                ]
+            )
             throw CreateTransactionError.invalidAmount
         }
         let transaction = CardTransaction(
-            name: name,
+            name: request.name,
             currency: mapped.code,
             amount: mapped.value,
-            merchant: merchant,
-            card: card,
-            category: category,
-            createdAt: date ?? Date()
+            merchant: request.merchant,
+            card: request.card,
+            category: request.category,
+            createdAt: request.date ?? Date()
         )
         let ctx = ModelContext(container)
         try ctx.transaction {
             ctx.insert(transaction)
             try ctx.save()
         }
+        logger.info(
+            "Persisted transaction",
+            metadata: [
+                "transactionID": "\(transaction.id.uuidString)",
+                "merchant": "\(request.merchant)",
+                "currency": "\(mapped.code)",
+                "amount": "\(mapped.value)",
+                "category": "\(request.category.rawValue)",
+                "createdAt": "\(transaction.createdAt.ISO8601Format())"
+            ]
+        )
         return transaction
     }
 
@@ -114,9 +158,24 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         card: String,
         category: EntryCategory? = nil,
         date: Date? = nil,
-        container: ModelContainer = DataStorage().sharedModelContainer
+        container: ModelContainer = DataStorage().sharedModelContainer,
+        logger: Logger = AppLogger.makeLogger(label: "intent.createTransaction")
     ) async throws {
-        let intent = CreateTransactionIntent(container: container)
+        let logger = logger.scoped(
+            "intent.createTransaction",
+            metadata: [
+                "entryPoint": "ui",
+                "hasCustomDate": "\(date != nil)"
+            ]
+        )
+        logger.debug(
+            "Executing create transaction flow",
+            metadata: [
+                "merchant": "\(merchant)",
+                "category": "\((category ?? .generic).rawValue)"
+            ]
+        )
+        let intent = CreateTransactionIntent(container: container, logger: logger)
         intent.name = name
         intent.merchant = merchant
         intent.amount = amount
