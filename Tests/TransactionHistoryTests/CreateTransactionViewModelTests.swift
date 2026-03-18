@@ -13,6 +13,9 @@ import Testing
 @Suite("CreateTransactionViewModel")
 @MainActor
 struct CreateTransactionViewModelTests {
+    init() {
+        _ = TestBootstrap.appLogger
+    }
 
     // MARK: - Helpers
 

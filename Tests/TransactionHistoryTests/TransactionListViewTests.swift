@@ -14,6 +14,9 @@ import SwiftData
 @Suite("TransactionListView - Search and Order")
 @MainActor
 struct TransactionListViewTests {
+    init() {
+        _ = TestBootstrap.appLogger
+    }
 
     // MARK: - Helpers
 
