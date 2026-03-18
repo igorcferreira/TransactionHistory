@@ -18,13 +18,17 @@ let package = Package(
         ),
     ],
     dependencies: [
+        .package(url: "https://github.com/apple/swift-log", from: "1.6.4"),
         .package(url: "https://github.com/nalexn/ViewInspector", from: "0.10.3")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
         // Targets can depend on other targets in this package and products from dependencies.
         .target(
-            name: "TransactionHistory"
+            name: "TransactionHistory",
+            dependencies: [
+                .product(name: "Logging", package: "swift-log")
+            ]
         ),
         .testTarget(
             name: "TransactionHistoryTests",
