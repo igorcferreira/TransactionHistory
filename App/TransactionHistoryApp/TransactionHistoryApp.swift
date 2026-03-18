@@ -16,6 +16,7 @@ struct TransactionHistoryApp: App {
 
     init() {
         TransactionHistoryProvider.updateAppShortcutParameters()
+        AppLogger.bootstrap()
     }
 
     var body: some Scene {

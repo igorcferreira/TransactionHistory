@@ -43,14 +43,14 @@ struct CreateTransactionIntentTests {
         let intent = CreateTransactionIntent(container: container)
         let date = Date(timeIntervalSince1970: 1_000_000)
         // WHEN creating a transaction
-        let created = try intent.createTransaction(
+        let created = try intent.createTransaction(.init(
             name: "Lunch",
             merchant: "Bistro",
             amount: "€12.50",
             card: "Visa",
             category: .generic,
             date: date
-        )
+        ))
         // THEN the returned object has the expected values
         #expect(created.name == "Lunch")
         #expect(created.currency == "EUR")
@@ -66,14 +66,14 @@ struct CreateTransactionIntentTests {
         let container = try Self.makeContainer()
         let intent = CreateTransactionIntent(container: container)
         // WHEN creating a transaction
-        let created = try intent.createTransaction(
+        let created = try intent.createTransaction(.init(
             name: "Groceries",
             merchant: "FreshMart",
             amount: "$45.00",
             card: "Mastercard",
             category: .generic,
             date: Date()
-        )
+        ))
         // THEN the transaction is retrievable from the container
         let fetched = try Self.fetchAll(from: container)
         #expect(fetched.count == 1)
@@ -89,14 +89,14 @@ struct CreateTransactionIntentTests {
         // WHEN creating a transaction with an invalid amount
         // THEN invalidAmount is thrown
         #expect(throws: CreateTransactionIntent.CreateTransactionError.invalidAmount) {
-            try intent.createTransaction(
+            try intent.createTransaction(.init(
                 name: "Bad",
                 merchant: "Store",
                 amount: "not-a-number",
                 card: "Card",
                 category: .generic,
                 date: Date()
-            )
+            ))
         }
     }
 
@@ -106,18 +106,18 @@ struct CreateTransactionIntentTests {
         let container = try Self.makeContainer()
         let intent = CreateTransactionIntent(container: container)
         // WHEN creating multiple transactions
-        _ = try intent.createTransaction(
+        _ = try intent.createTransaction(.init(
             name: "First", merchant: "A", amount: "€1.00",
             card: "Card", category: .generic, date: Date()
-        )
-        _ = try intent.createTransaction(
+        ))
+        _ = try intent.createTransaction(.init(
             name: "Second", merchant: "B", amount: "$2.00",
             card: "Card", category: .generic, date: Date()
-        )
-        _ = try intent.createTransaction(
+        ))
+        _ = try intent.createTransaction(.init(
             name: "Third", merchant: "C", amount: "£3.00",
             card: "Card", category: .generic, date: Date()
-        )
+        ))
         // THEN all three are present in the container
         let all = try Self.fetchAll(from: container)
         #expect(all.count == 3)

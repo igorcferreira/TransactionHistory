@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Logging
 import SwiftData
 
 /// ViewModel that manages form state and validation for creating a new transaction.
@@ -74,14 +75,37 @@ final class CreateTransactionViewModel {
 
     /// Creates the transaction via `CreateTransactionIntent`, which persists
     /// the record in the given context and donates the intent to Siri.
-    func save(in container: ModelContainer) async throws {
-        guard let amount = parsedAmount else { return }
+    func save(
+        in container: ModelContainer,
+        logger: Logger = AppLogger.makeLogger(label: "feature.createTransaction")
+    ) async throws {
+        guard let amount = parsedAmount else {
+            logger.warning(
+                "Blocked save because the amount is invalid",
+                metadata: [
+                    "hasName": "\(!name.trimmingCharacters(in: .whitespaces).isEmpty)",
+                    "hasMerchant": "\(!merchant.trimmingCharacters(in: .whitespaces).isEmpty)",
+                    "hasCard": "\(!card.trimmingCharacters(in: .whitespaces).isEmpty)"
+                ]
+            )
+            return
+        }
 
         let trimmedName = name.trimmingCharacters(in: .whitespaces)
         let trimmedMerchant = merchant.trimmingCharacters(in: .whitespaces)
         let formattedAmount = amount.formatted(.currency(code: currency))
         let trimmedCard = card.trimmingCharacters(in: .whitespaces)
         let resolvedDate = date ?? Date()
+
+        logger.info(
+            "Submitting manual transaction",
+            metadata: [
+                "merchant": "\(trimmedMerchant)",
+                "currency": "\(currency)",
+                "amount": "\(amount)",
+                "hasCustomDate": "\(date != nil)"
+            ]
+        )
 
         // Create the transaction and donate it to Siri.
         try await CreateTransactionIntent.execute(
@@ -90,7 +114,8 @@ final class CreateTransactionViewModel {
             amount: formattedAmount,
             card: trimmedCard,
             date: resolvedDate,
-            container: container
+            container: container,
+            logger: logger
         )
     }
 }

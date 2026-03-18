@@ -4,9 +4,11 @@
 //
 //  Created by Igor Ferreira on 14/03/2026.
 //
+import Logging
 import SwiftUI
 
 struct TransactionDetailView: View {
+    @Environment(\.transactionHistoryLogger) private var logger
     private let viewModel: TransactionDetailViewModel
 
     init(transaction: CardTransaction) {
@@ -28,6 +30,16 @@ struct TransactionDetailView: View {
             }
         }
         .navigationTitle(viewModel.transaction.name)
+        .onAppear {
+            logger.info(
+                "Displayed transaction detail",
+                metadata: [
+                    "transactionID": "\(viewModel.transaction.id.uuidString)",
+                    "merchant": "\(viewModel.transaction.merchant)",
+                    "category": "\(viewModel.transaction.category.rawValue)"
+                ]
+            )
+        }
     }
 }
 
