@@ -16,6 +16,9 @@ import SwiftData
 @Suite("TransactionListView - Sort Order and Grouping")
 @MainActor
 struct TransactionListViewSortTests {
+    init() {
+        _ = TestBootstrap.appLogger
+    }
 
     // MARK: - Helpers
 
