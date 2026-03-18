@@ -14,6 +14,14 @@ public enum AppLogger: Sendable {
     private static let bootstrapLock = NSLock()
     nonisolated(unsafe) private static var isBootstrapped = false
 
+    public static let defaultLogLevel: Logger.Level = {
+#if DEBUG
+        .debug
+#else
+        .info
+#endif
+    }()
+
     static let defaultLogger = makeLogger(label: "app")
 
     static func makeLogger(
@@ -32,13 +40,24 @@ public enum AppLogger: Sendable {
         return logger
     }
 
-    public static func bootstrap() {
+    public static func bootstrap(logLevel: Logger.Level = defaultLogLevel) {
         bootstrapLock.lock()
         defer { bootstrapLock.unlock() }
 
         guard !isBootstrapped else { return }
-        LoggingSystem.bootstrap(StreamLogHandler.standardError)
+        LoggingSystem.bootstrap { label in
+            makeLogHandler(label: label, logLevel: logLevel)
+        }
         isBootstrapped = true
+    }
+
+    static func makeLogHandler(
+        label: String,
+        logLevel: Logger.Level
+    ) -> StreamLogHandler {
+        var handler = StreamLogHandler.standardError(label: label)
+        handler.logLevel = logLevel
+        return handler
     }
 }
 
