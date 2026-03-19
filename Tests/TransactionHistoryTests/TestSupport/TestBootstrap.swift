@@ -11,4 +11,8 @@ enum TestBootstrap {
     static let appLogger: Void = {
         AppLogger.bootstrap()
     }()
+
+    static let appMetrics: Void = {
+        AppMetrics.bootstrap()
+    }()
 }
