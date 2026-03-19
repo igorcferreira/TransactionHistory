@@ -37,13 +37,13 @@ jobs:
       - name: Swift version
         run: xcrun swift --version
 
-      - name: Install SwiftLint (macOS)
+      - name: Install SwiftLint
         run: |
           if ! command -v swiftlint &> /dev/null; then
             brew install swiftlint
           fi
           swiftlint version
-      - name: SwiftLint (macOS)
+      - name: SwiftLint
         run: |
           # Run SwiftLint with GitHub annotations for PR comments
           swiftlint lint --reporter github-actions-logging
