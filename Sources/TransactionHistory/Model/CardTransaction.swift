@@ -57,5 +57,7 @@ public final class CardTransaction: Identifiable {
         self.merchant = merchant
         self.card = card
         self.createdAt = createdAt
+        self.category = category
+        self.categoryRawType = category.rawValue
     }
 }
