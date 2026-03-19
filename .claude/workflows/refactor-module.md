@@ -39,7 +39,7 @@ Each step should leave all tests passing.
 For each step:
 
 - [ ] Make the change
-- [ ] Run `xcrun swift test -c debug` to verify nothing broke
+- [ ] Run iOS package tests to verify nothing broke
 - [ ] If a test breaks, stop and assess — is it a valid behavior change or a bug?
 
 ### 5. Update Tests if Needed
