@@ -16,6 +16,8 @@ public struct TransactionHistoryProvider: AppShortcutsProvider, Sendable {
             phrases: [
                 "Register a purchase using \(.applicationName)",
                 "Log a transaction on \(.applicationName)",
+                "Register a \(\.$category) purchase using \(.applicationName)",
+                "Log a \(\.$category) transaction on \(.applicationName)",
             ],
             shortTitle: "Register a purchase",
             systemImageName: "wallet.bifold.fill"
