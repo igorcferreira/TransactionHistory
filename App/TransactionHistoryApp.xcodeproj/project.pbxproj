@@ -156,7 +156,6 @@
 				78DB43E52F632CEB00649077 /* Sources */,
 				78DB43E62F632CEB00649077 /* Frameworks */,
 				78DB43E72F632CEB00649077 /* Resources */,
-				781280952F6C4A6300B4A817 /* Run Swiftlint */,
 			);
 			buildRules = (
 			);
@@ -268,24 +267,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		781280952F6C4A6300B4A817 /* Run Swiftlint */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Run Swiftlint";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if [[ \"$(uname -m)\" == arm64 ]]; then\n    export PATH=\"$PATH:/opt/homebrew/bin\"\nfi\n\nif which swiftlint > /dev/null; then\n  echo \"Running swiftlint at $(pwd)\"\n  swiftlint lint --config ../.swiftlint.yml --quiet\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
-		};
 		784F54E52F63528C005BF4B8 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
