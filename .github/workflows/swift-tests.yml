@@ -22,21 +22,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  test:
-    name: Test on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        include:
-          - os: macos-26
+  lint:
+    name: Lint
+    runs-on: macos-26
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Swift version
-        run: xcrun swift --version
-
       - name: Install SwiftLint
         run: |
           if ! command -v swiftlint &> /dev/null; then
@@ -50,12 +42,28 @@ jobs:
           # Also generate JSON report for artifacts
           swiftlint lint --reporter json > swiftlint-results.json || true
 
+  test_package:
+    name: Test Package
+    runs-on: macos-26
+    needs: [lint]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Run iOS package tests
         run: |
           xcodebuild test -configuration Debug \
             -scheme 'TransactionHistory' \
             -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17'
 
+  test_app:
+    name: Test app
+    runs-on: macos-26
+    needs: [lint]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Run iOS app tests
         run: |
           (cd App ; xcodebuild test -configuration Debug \
