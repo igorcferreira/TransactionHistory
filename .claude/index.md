@@ -30,7 +30,7 @@ Quick-reference map of the repository. Use this to locate modules, understand bo
 | File | Type | Description |
 |------|------|-------------|
 | `Sources/TransactionHistory/Support/AppLogger.swift` | `enum` (Sendable) | Centralized logging bootstrap, namespaced `Logger` factory, SwiftUI environment key |
-| `Sources/TransactionHistory/Support/AppMetrics.swift` | `enum` (Sendable) | Centralized metrics bootstrap, namespaced `Counter`/`Timer`/`Gauge` factory (swift-metrics) |
+| `Sources/TransactionHistory/Support/AppMetrics.swift` | `enum` (Sendable) | Centralized metrics bootstrap, namespaced `Counter`/`Timer`/`Gauge` factory (swift-metrics); Scout as production backend |
 
 ## Feature Modules
 
@@ -105,8 +105,8 @@ Quick-reference map of the repository. Use this to locate modules, understand bo
 | `Tests/TransactionHistoryTests/CurrencyMapperTests.swift` | Symbol parsing, fallbacks, locale handling |
 | `Tests/TransactionHistoryTests/TransactionCoordinatorViewModelTests.swift` | Navigation state: path, sheet toggles |
 | `Tests/TransactionHistoryTests/TransactionDetailViewModelTests.swift` | Detail display state |
-| `Tests/TransactionHistoryTests/TransactionListViewTests.swift` | ViewInspector: search, sort, structure (macOS) |
-| `Tests/TransactionHistoryTests/TransactionListViewSortTests.swift` | ViewInspector: sort order behavior (macOS) |
+| `Tests/TransactionHistoryTests/TransactionListViewTests.swift` | ViewInspector: search, sort, structure |
+| `Tests/TransactionHistoryTests/TransactionListViewSortTests.swift` | ViewInspector: sort order behavior |
 | `Tests/TransactionHistoryTests/AppLoggerTests.swift` | AppLogger defaults and handler configuration |
 | `Tests/TransactionHistoryTests/AppMetricsTests.swift` | AppMetrics bootstrap idempotency, factory methods |
 | `Tests/TransactionHistoryTests/TransactionHistoryTests.swift` | Base test file |

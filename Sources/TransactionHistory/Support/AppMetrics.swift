@@ -13,6 +13,15 @@ public enum AppMetrics: Sendable {
     private static let bootstrapLock = NSLock()
     nonisolated(unsafe) private static var isBootstrapped = false
 
+    /// Marks the metrics system as externally bootstrapped.
+    /// Call this when an external framework (e.g. Scout) will handle
+    /// `MetricsSystem.bootstrap` to prevent the lazy bootstrap from racing.
+    public static func prepareForExternalBootstrap() {
+        bootstrapLock.lock()
+        defer { bootstrapLock.unlock() }
+        isBootstrapped = true
+    }
+
     /// Bootstraps the metrics system with the given factory.
     /// Defaults to `NOOPMetricsHandler.instance` so the package ships with
     /// zero overhead. The app entry point can call this with a real backend.

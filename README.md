@@ -1,6 +1,6 @@
 # Transaction History
 
-`Transaction History` is a SwiftUI multi-platform (macOS/iOS) 
+`Transaction History` is a SwiftUI iOS app
 which allows the user to manage payment transactions.
 
 With the AppIntents exposed by the app, the user is able to register and list transactions,
@@ -20,8 +20,8 @@ TransactionHistory/
     ├─ View                            # Re-usable views
     ├─ Intent                          # AppIntent layer, to interact with Shortcuts/Siri
 ├─ Tests/TransactionHistory/           # Test suit for the main codebase
-├─ App/TransactionHistoryApp.xcodeproj # Configuration of macOS/iOS app.
-├─ App/TransactionHistoryApp/          # macOS/iOS app entrypoint. Mostly empty.
+├─ App/TransactionHistoryApp.xcodeproj # Configuration of the iOS app.
+├─ App/TransactionHistoryApp/          # iOS app entrypoint. Mostly empty.
 ├─ App/TransactionHistoryAppTests/     # Unit test suit for the app.
 ├─ App/TransactionHistoryAppUITests/   # Interface test suit for the app.
 ```

@@ -1,21 +1,20 @@
 # Transaction History
 
-SwiftUI multi-platform (macOS/iOS) app for managing payment transactions.
+SwiftUI iOS app for managing payment transactions.
 MVVM + Coordinator architecture with SwiftData persistence.
 
 > For architecture, patterns, and codebase map see `.claude/` (agents, skills, memory, workflows, index).
 
-## **⚠️ Definition of Done:** A feature or change is only complete when **all three** checks pass:
-1. macOS package tests
-2. iOS package tests
-3. SwiftLint — `swiftlint lint` reports zero violations
+## **⚠️ Definition of Done:** A feature or change is only complete when **both** checks pass:
+1. iOS package tests
+2. SwiftLint — `swiftlint lint` reports zero violations
 
 Never skip any of these steps.
 
-**When the change touches App-level files** (anything under `App/TransactionHistoryApp/`, `App/TransactionHistoryApp.xcodeproj/`, or asset catalogs), you **must also run the App unit tests** on both platforms, as described in the `Running tests` subsections below.
+**When the change touches App-level files** (anything under `App/TransactionHistoryApp/`, `App/TransactionHistoryApp.xcodeproj/`, or asset catalogs), you **must also run the App unit tests**, as described in the `Running tests` subsections below.
 
 App-level changes include: app entry point (`TransactionHistoryApp.swift`), `Info.plist`, entitlements, asset catalogs (icons, colors), xcodeproj build settings, and test plans.
-These tests are **not optional** — they validate that the app builds and launches correctly on both platforms.
+These tests are **not optional** — they validate that the app builds and launches correctly.
 
 **UI tests (`TransactionHistoryAppUITests`) are expensive** — they launch the full app in light and dark appearance modes. **Do NOT run UI tests as part of routine validation.** Only run them when the user explicitly requests it.
 
@@ -27,36 +26,6 @@ Changes are mainly made in the Swift Package.
 As consequence, running the app test is only necessary when changing the app's xcodeproj configuration or files.
 
 The Package tests must always be run.
-
-### macOS
-
-Testing Packages:
-
-```shell
-xcrun swift test -c debug
-```
-
-> **Note:** Always use `xcrun swift test` (not plain `swift test`) to ensure the Xcode-bundled
-> toolchain is used. The `_SwiftData_SwiftUI` cross-import overlay that provides `@Query` and
-> `modelContainer` is only available through the Xcode toolchain, not standalone Swift toolchains.
-
-Testing app (unit tests only):
-
-```shell
-(cd App ; xcodebuild test -configuration Debug \
-    -scheme 'TransactionHistoryApp' \
-    -destination 'platform=macOS,arch=arm64,name=My Mac' \
-    -only-testing:TransactionHistoryAppTests)
-```
-
-Testing app (UI tests — only when explicitly requested):
-
-```shell
-(cd App ; xcodebuild test -configuration Debug \
-    -scheme 'TransactionHistoryApp' \
-    -destination 'platform=macOS,arch=arm64,name=My Mac' \
-    -only-testing:TransactionHistoryAppUITests)
-```
 
 ### iOS
 
@@ -88,7 +57,7 @@ Testing app (UI tests — only when explicitly requested):
 
 ### SwiftLint
 
-**Always run SwiftLint in addition to both macOS and iOS package tests before declaring any change or feature complete.** Fix every error and warning reported before committing.
+**Always run SwiftLint in addition to iOS package tests before declaring any change or feature complete.** Fix every error and warning reported before committing.
 
 ```shell
 swiftlint lint
@@ -129,7 +98,7 @@ Reference `.claude/` for detailed context:
 
 ## Rules
 
-- Generated code must compile with zero errors on both platforms
+- Generated code must compile with zero errors
 - Follow MVVM + Coordinator architecture (details in `.claude/skills/ios-architecture.md`)
 - Keep functions simple and low-complexity
 - Include logical comments in generated code

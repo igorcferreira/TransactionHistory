@@ -15,7 +15,7 @@ Structured process for diagnosing and fixing bugs.
 - [ ] Clarify what "broken" means — crash? wrong data? wrong UI? performance?
 - [ ] Identify the affected screen/feature
 - [ ] Determine if it's consistent or intermittent
-- [ ] Check if it's platform-specific (iOS only, macOS only, both)
+
 
 ### 2. Locate the Code Path
 
@@ -62,7 +62,6 @@ Structured process for diagnosing and fixing bugs.
 
 - [ ] The new test passes
 - [ ] All existing tests still pass
-- [ ] `xcrun swift test -c debug` — macOS
 - [ ] `xcodebuild test` — iOS
 - [ ] `swiftlint lint` — zero violations
 

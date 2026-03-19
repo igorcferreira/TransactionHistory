@@ -5,7 +5,7 @@ Testing patterns, conventions, and infrastructure used in this project.
 ## Framework
 
 - **Swift Testing** (`@Test`, `@Suite`, `#expect`, `#require`) — not XCTest.
-- **ViewInspector** for structural UI tests (macOS only).
+- **ViewInspector** for structural UI tests.
 - Tests live in `Tests/TransactionHistoryTests/`.
 
 ## Test Structure
@@ -157,34 +157,25 @@ Then individual tests modify one field to test its validation.
 - **Sort behavior** — order changes with sort toggle.
 - **Section grouping** — items grouped by expected criteria.
 
-Note: ViewInspector tests run on macOS only (`NSHostingController`).
+Note: ViewInspector tests verify view structure at the package level.
 
 ## Running Tests
 
-### Definition of Done — All 3 Must Pass
+### Definition of Done — Both Must Pass
 
 ```shell
-# 1. macOS package tests
-xcrun swift test -c debug
-
-# 2. iOS package tests
+# 1. iOS package tests
 xcodebuild test -configuration Debug \
     -scheme 'TransactionHistory' \
     -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17'
 
-# 3. SwiftLint
+# 2. SwiftLint
 swiftlint lint
 ```
 
 ### App Tests (Only When Changing App-Level Files)
 
 ```shell
-# macOS app unit tests
-(cd App ; xcodebuild test -configuration Debug \
-    -scheme 'TransactionHistoryApp' \
-    -destination 'platform=macOS,arch=arm64,name=My Mac' \
-    -only-testing:TransactionHistoryAppTests)
-
 # iOS app unit tests
 (cd App ; xcodebuild test -configuration Debug \
     -scheme 'TransactionHistoryApp' \

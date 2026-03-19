@@ -42,6 +42,15 @@ public enum AppLogger: Sendable {
         return logger
     }
 
+    /// Marks the logging system as externally bootstrapped.
+    /// Call this when an external framework (e.g. Scout) will handle
+    /// `LoggingSystem.bootstrap` to prevent the lazy bootstrap from racing.
+    public static func prepareForExternalBootstrap() {
+        bootstrapLock.lock()
+        defer { bootstrapLock.unlock() }
+        isBootstrapped = true
+    }
+
     public static func bootstrap(logLevel: Logger.Level = defaultLogLevel) {
         bootstrapLock.lock()
         defer { bootstrapLock.unlock() }

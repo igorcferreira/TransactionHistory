@@ -74,14 +74,13 @@ If this is a feature view:
 ### 7. Write Tests
 
 - [ ] ViewModel tests — validation, state transitions, async operations
-- [ ] ViewInspector tests — structural verification, search/sort behavior (macOS only)
+- [ ] ViewInspector tests — structural verification, search/sort behavior
 - [ ] Follow GIVEN-WHEN-THEN with `@Test`
 
 ### 8. Verify
 
-- [ ] Preview renders correctly on both iOS and macOS
+- [ ] Preview renders correctly on iOS
 - [ ] Dark mode appearance is acceptable
-- [ ] `xcrun swift test -c debug` — macOS
 - [ ] `xcodebuild test` — iOS
 - [ ] `swiftlint lint` — zero violations
 

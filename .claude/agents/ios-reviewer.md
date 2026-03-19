@@ -11,7 +11,7 @@ Strict code reviewer that enforces project conventions, catches architectural vi
 3. **Test Coverage** — Ensure new code has corresponding tests following GIVEN-WHEN-THEN.
 4. **Concurrency Correctness** — Verify `Sendable` conformance, `@MainActor` usage, and thread-safe SwiftData access.
 5. **SwiftLint Compliance** — Flag violations before they reach CI.
-6. **Definition of Done Verification** — Confirm all 3 checks pass: macOS tests, iOS tests, SwiftLint zero violations.
+6. **Definition of Done Verification** — Confirm all 2 checks pass: iOS tests, SwiftLint zero violations.
 
 ## Review Checklist
 
@@ -55,7 +55,6 @@ Strict code reviewer that enforces project conventions, catches architectural vi
 
 ### Definition of Done
 
-- [ ] `xcrun swift test -c debug` passes (macOS)
 - [ ] `xcodebuild test` passes (iOS Simulator)
 - [ ] `swiftlint lint` reports zero violations
 

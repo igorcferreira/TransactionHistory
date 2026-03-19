@@ -2,7 +2,7 @@
 
 ## What Is TransactionHistory?
 
-A SwiftUI multi-platform app (iOS 26+ / macOS 26+) for managing payment transactions. Built with SwiftData for persistence and CloudKit for cross-device sync.
+A SwiftUI iOS app (iOS 26+) for managing payment transactions. Built with SwiftData for persistence and CloudKit for cross-device sync.
 
 ## Current State
 
@@ -29,7 +29,7 @@ The app is in its **first vertical slice** — the Transaction domain is functio
 
 | Component | Technology |
 |-----------|-----------|
-| UI | SwiftUI (iOS 26+, macOS 26+) |
+| UI | SwiftUI (iOS 26+) |
 | State | Swift Observation (`@Observable`) |
 | Persistence | SwiftData (`@Model`, `@Query`) |
 | Sync | CloudKit (automatic, device only) |
@@ -37,19 +37,21 @@ The app is in its **first vertical slice** — the Transaction domain is functio
 | Testing | Swift Testing + ViewInspector |
 | Linting | SwiftLint |
 | Package | Swift Package (6.2 tools) |
-| Min platforms | iOS 26, macOS 26, watchOS 26 |
+| Min platforms | iOS 26 |
 
 ## Package Dependencies
 
 | Dependency | Version | Purpose |
 |-----------|---------|---------|
-| ViewInspector | 0.10.3 | UI structure testing (macOS only, test target) |
+| ViewInspector | 0.10.3 | UI structure testing (test target) |
+| swift-log | 1.7.0 | Centralized logging (AppLogger) |
+| swift-metrics | 2.5.1 | Metrics API (AppMetrics) |
+| Scout | 0.1.0 | Production metrics backend |
 
 ## Build & Test
 
 The project is a **Swift Package** inside an **Xcode app wrapper**. Most development happens in the package; the app provides the entry point, entitlements, and asset catalog.
 
-Three checks must pass for any change (Definition of Done):
-1. `xcrun swift test -c debug` (macOS package tests)
-2. `xcodebuild test` on iOS Simulator (iOS package tests)
-3. `swiftlint lint` (zero violations)
+Two checks must pass for any change (Definition of Done):
+1. `xcodebuild test` on iOS Simulator (iOS package tests)
+2. `swiftlint lint` (zero violations)
