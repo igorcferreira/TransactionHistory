@@ -26,11 +26,13 @@ public enum AppLogger: Sendable {
 
     static func makeLogger(
         label: String,
+        logLevel: Logger.Level? = nil,
         metadata: Logger.Metadata = [:]
     ) -> Logger {
         bootstrap()
 
         var logger = Logger(label: "dev.igorcferreira.TransactionHistory.\(label)")
+        logger.logLevel = logLevel ?? defaultLogLevel
         logger[metadataKey: "component"] = .string(label)
 
         for (key, value) in metadata {
