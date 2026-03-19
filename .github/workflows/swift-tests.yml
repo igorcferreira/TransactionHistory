@@ -50,11 +50,15 @@ jobs:
           # Also generate JSON report for artifacts
           swiftlint lint --reporter json > swiftlint-results.json || true
 
-      - name: Run tests
-        run: xcrun swift test -c debug
-
-      - name: Run iOS tests
+      - name: Run iOS package tests
         run: |
           xcodebuild test -configuration Debug \
             -scheme 'TransactionHistory' \
             -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17'
+
+      - name: Run iOS app tests
+        run: |
+          (cd App ; xcodebuild test -configuration Debug \
+            -scheme 'TransactionHistoryApp' \
+            -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17' \
+            -only-testing:TransactionHistoryAppTests)
