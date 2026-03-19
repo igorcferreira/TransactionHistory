@@ -19,6 +19,7 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/apple/swift-log", from: "1.6.4"),
+        .package(url: "https://github.com/apple/swift-metrics", from: "2.5.0"),
         .package(url: "https://github.com/nalexn/ViewInspector", from: "0.10.3")
     ],
     targets: [
@@ -27,7 +28,8 @@ let package = Package(
         .target(
             name: "TransactionHistory",
             dependencies: [
-                .product(name: "Logging", package: "swift-log")
+                .product(name: "Logging", package: "swift-log"),
+                .product(name: "Metrics", package: "swift-metrics")
             ]
         ),
         .testTarget(
