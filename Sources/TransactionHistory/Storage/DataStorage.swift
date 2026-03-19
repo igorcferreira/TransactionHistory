@@ -6,6 +6,7 @@
 //
 import Foundation
 import Logging
+import Metrics
 import SwiftData
 
 extension ProcessInfo {
@@ -20,6 +21,7 @@ extension ProcessInfo {
 
 public struct DataStorage: Sendable {
     private static let logger = AppLogger.makeLogger(label: "storage.dataStorage")
+    private static let fetchTimer = AppMetrics.makeTimer(label: "storage.fetch")
 
     var modelContext: ModelContext {
         ModelContext(sharedModelContainer)
@@ -52,6 +54,7 @@ public struct DataStorage: Sendable {
     }
 
     func top() throws -> [CardTransaction] {
+        let start = ContinuousClock.now
         var descriptor = FetchDescriptor<CardTransaction>(
             sortBy: [
                 SortDescriptor(\.createdAt, order: .reverse)
@@ -59,6 +62,7 @@ public struct DataStorage: Sendable {
         )
         descriptor.fetchLimit = 10
         let transactions = try modelContext.fetch(descriptor)
+        Self.fetchTimer.record(duration: ContinuousClock.now - start)
         Self.logger.debug(
             "Fetched top transactions",
             metadata: [
@@ -70,9 +74,11 @@ public struct DataStorage: Sendable {
     }
 
     func with(ids: [UUID]) throws -> [CardTransaction] {
+        let start = ContinuousClock.now
         let transactions = try modelContext.fetch(FetchDescriptor<CardTransaction>(
             predicate: #Predicate { item in ids.contains(item.id) }
         ))
+        Self.fetchTimer.record(duration: ContinuousClock.now - start)
         Self.logger.debug(
             "Fetched transactions by identifiers",
             metadata: [

@@ -7,12 +7,15 @@
 
 import Foundation
 import Logging
+import Metrics
 import SwiftData
 
 /// ViewModel that manages form state and validation for creating a new transaction.
 @Observable
 @MainActor
 final class CreateTransactionViewModel {
+
+    private static let formSubmissionCounter = AppMetrics.makeCounter(label: "form.transaction.submitted")
 
     // MARK: - Form fields
 
@@ -91,6 +94,7 @@ final class CreateTransactionViewModel {
             return
         }
 
+        Self.formSubmissionCounter.increment()
         let trimmedName = name.trimmingCharacters(in: .whitespaces)
         let trimmedMerchant = merchant.trimmingCharacters(in: .whitespaces)
         let formattedAmount = amount.formatted(.currency(code: currency))
