@@ -22,23 +22,13 @@ on:
   workflow_dispatch:
 
 jobs:
-  checkout:
-    name: Checkout
+  lint:
+    name: Lint
     runs-on: macos-26
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Swift version
-        run: xcrun swift --version
-
-  lint:
-    name: Lint
-    runs-on: macos-26
-    needs: [checkout]
-
-    steps:
       - name: Install SwiftLint
         run: |
           if ! command -v swiftlint &> /dev/null; then
@@ -58,6 +48,8 @@ jobs:
     needs: [lint]
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Run iOS package tests
         run: |
           xcodebuild test -configuration Debug \
@@ -70,6 +62,8 @@ jobs:
     needs: [lint]
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
       - name: Run iOS app tests
         run: |
           (cd App ; xcodebuild test -configuration Debug \
