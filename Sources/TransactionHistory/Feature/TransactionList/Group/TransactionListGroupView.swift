@@ -41,31 +41,11 @@ struct TransactionListGroupView: View {
     }
 
     var body: some View {
-        List {
-            ForEach(groups) { group in
-                Section {
-                    Iterate(group.transactions.enumerated()) { transaction in
-                        Button {
-                            onTransactionTapped?(transaction)
-                        } label: {
-                            ShortTransactionView(
-                                transaction: transaction
-                            )
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                    }
-                } header: {
-                    Text(viewModel.sectionTitle(for: group.date))
-                        .font(.headline)
-                        .textCase(.uppercase)
-                        .id("section_\(group.id)_header")
-                }
-                .id("section_\(group.id)")
-            }
-        }
-        .listStyle(.plain)
-        .id("transaction_list")
+        TransactionListGroupContentView(
+            groups: groups,
+            viewModel: viewModel,
+            onTransactionTapped: onTransactionTapped
+        )
     }
 }
 
