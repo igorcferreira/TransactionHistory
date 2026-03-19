@@ -19,7 +19,7 @@ Improves existing code quality, modularity, and testability without changing obs
 
 - **Never change behavior.** All existing tests must pass before and after.
 - **Refactor in small steps.** Each step should be independently verifiable.
-- **Run all 3 DoD checks** after every refactoring pass (macOS tests, iOS tests, SwiftLint).
+- **Run all DoD checks** after every refactoring pass (iOS tests, SwiftLint).
 - **No speculative abstractions.** Only extract when there are 2+ concrete uses, or when preparing for an imminent feature.
 
 ### Keep It Simple

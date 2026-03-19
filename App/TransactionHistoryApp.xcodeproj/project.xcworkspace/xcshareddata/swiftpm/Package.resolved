@@ -1,0 +1,33 @@
+{
+  "originHash" : "a5a6745b2c70c22685bfb683455c475862bc007076a3b6c928f87f943ce6e489",
+  "pins" : [
+    {
+      "identity" : "scout",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/kasianov-mikhail/scout",
+      "state" : {
+        "revision" : "b1849acc157551e9b68cc16263639495b8965b1f",
+        "version" : "2.0.3"
+      }
+    },
+    {
+      "identity" : "swift-log",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-log",
+      "state" : {
+        "revision" : "bbd81b6725ae874c69e9b8c8804d462356b55523",
+        "version" : "1.10.1"
+      }
+    },
+    {
+      "identity" : "swift-metrics",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-metrics",
+      "state" : {
+        "revision" : "f17c111cec972c2a4922cef38cf64f76f7e87886",
+        "version" : "2.8.0"
+      }
+    }
+  ],
+  "version" : 3
+}

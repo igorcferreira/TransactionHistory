@@ -53,7 +53,6 @@ For each step:
 
 - [ ] All existing tests pass (updated if API changed)
 - [ ] No new SwiftLint violations
-- [ ] `xcrun swift test -c debug` — macOS
 - [ ] `xcodebuild test` — iOS
 - [ ] `swiftlint lint` — zero violations
 - [ ] Code is measurably simpler (fewer lines, lower complexity, or better separation)

@@ -26,11 +26,13 @@ public enum AppLogger: Sendable {
 
     static func makeLogger(
         label: String,
+        logLevel: Logger.Level? = nil,
         metadata: Logger.Metadata = [:]
     ) -> Logger {
         bootstrap()
 
         var logger = Logger(label: "dev.igorcferreira.TransactionHistory.\(label)")
+        logger.logLevel = logLevel ?? defaultLogLevel
         logger[metadataKey: "component"] = .string(label)
 
         for (key, value) in metadata {
@@ -38,6 +40,15 @@ public enum AppLogger: Sendable {
         }
 
         return logger
+    }
+
+    /// Marks the logging system as externally bootstrapped.
+    /// Call this when an external framework (e.g. Scout) will handle
+    /// `LoggingSystem.bootstrap` to prevent the lazy bootstrap from racing.
+    public static func prepareForExternalBootstrap() {
+        bootstrapLock.lock()
+        defer { bootstrapLock.unlock() }
+        isBootstrapped = true
     }
 
     public static func bootstrap(logLevel: Logger.Level = defaultLogLevel) {

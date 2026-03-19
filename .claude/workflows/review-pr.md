@@ -49,7 +49,7 @@ Checklist-driven code review process for pull requests.
 - [ ] `@Query` used for reactive data (not manual fetch in onAppear)
 - [ ] Accessibility identifiers present for testable elements
 - [ ] `#Preview` blocks with `.includingMocks()` for every new view
-- [ ] Works on both iOS and macOS (no platform-specific code without `#if os()`)
+
 
 ### 6. Review Tests
 
@@ -62,10 +62,9 @@ Checklist-driven code review process for pull requests.
 
 ### 7. Run Verification
 
-- [ ] `xcrun swift test -c debug` — macOS package tests pass
 - [ ] `xcodebuild test` on iOS Simulator — iOS package tests pass
 - [ ] `swiftlint lint` — zero violations
-- [ ] If app-level files changed: run app unit tests on both platforms
+- [ ] If app-level files changed: run app unit tests on iOS
 
 ### 8. Classify Findings
 

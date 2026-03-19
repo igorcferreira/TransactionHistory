@@ -214,8 +214,8 @@ The `.includingMocks()` modifier attaches an in-memory ModelContainer with seede
 - List containers: `.id("[domain]_list")`.
 - Follow this pattern for all new components to enable ViewInspector and UI testing.
 
-## Multi-Platform Notes
+## Platform Notes
 
 - Use adaptive layouts — avoid fixed dimensions.
-- The same views run on iOS and macOS; use `#if os()` only when genuinely needed.
-- Test previews on both platforms.
+- Views target iOS.
+- Test previews on iOS.

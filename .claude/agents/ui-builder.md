@@ -10,7 +10,7 @@ Builds consistent, accessible SwiftUI views and reusable components following th
 2. **Reusable Components** — Create shared UI components (empty states, loading indicators, error views, cards).
 3. **Consistency** — Ensure all views follow the same structural patterns established in the Transaction feature.
 4. **Accessibility** — Add accessibility identifiers for testing, proper labels, and dynamic type support.
-5. **Multi-Platform** — Ensure views work on both iOS and macOS (adaptive layouts).
+5. **iOS Target** — Ensure views work on iOS.
 6. **Dark Mode** — Verify views render correctly in both light and dark appearance.
 
 ## View Patterns
@@ -137,15 +137,13 @@ struct [Feature]ListGroupView: View {
 
 ### Testing Support
 
-- Use `ViewInspector` for structural UI tests (macOS only).
+- Use `ViewInspector` for structural UI tests.
 - Provide accessibility identifiers matching pattern: `"[domain]_[id]"`.
 - Keep views thin — test logic in ViewModels instead.
 
-### Multi-Platform
+### Layout
 
-- Use `#if os(iOS)` / `#if os(macOS)` only when platform behavior genuinely differs.
 - Prefer adaptive layouts (`.frame(maxWidth:)`) over fixed dimensions.
-- Test on both platforms as part of Definition of Done.
 
 ## Example Tasks
 

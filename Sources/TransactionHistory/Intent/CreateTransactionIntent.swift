@@ -7,6 +7,7 @@
 import AppIntents
 import Foundation
 import Logging
+import Metrics
 import SwiftData
 
 struct CreateTransactionIntent: AppIntent, Sendable {
@@ -32,6 +33,10 @@ struct CreateTransactionIntent: AppIntent, Sendable {
 
     static let title: LocalizedStringResource = "Create Transaction"
     static let supportedModes: IntentModes = .background
+
+    private static let creationCounter = AppMetrics.makeCounter(label: "transaction.created")
+    private static let creationFailureCounter = AppMetrics.makeCounter(label: "transaction.creation.failed")
+
     private let container: ModelContainer
     private let logger: Logger
 
@@ -110,6 +115,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
     ) throws -> CardTransaction {
         let mapper = CurrencyMapper()
         guard let mapped = mapper.parse(request.amount) else {
+            Self.creationFailureCounter.increment()
             logger.warning(
                 "Rejected transaction creation because amount parsing failed",
                 metadata: [
@@ -134,6 +140,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
             ctx.insert(transaction)
             try ctx.save()
         }
+        Self.creationCounter.increment()
         logger.info(
             "Persisted transaction",
             metadata: [

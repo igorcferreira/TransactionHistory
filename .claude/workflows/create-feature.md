@@ -70,12 +70,11 @@ End-to-end workflow for adding a new feature domain to the app.
 - [ ] ViewModel tests — validation, state, async save (GIVEN-WHEN-THEN)
 - [ ] Storage tests — fetch helpers, empty state, limits, sort order
 - [ ] Intent tests — creation, persistence, error cases
-- [ ] View tests — ViewInspector structural tests (macOS)
+- [ ] View tests — ViewInspector structural tests
 - [ ] Use isolated in-memory containers per test suite
 
 ### 9. Verify Definition of Done
 
-- [ ] `xcrun swift test -c debug` — macOS package tests pass
 - [ ] `xcodebuild test` — iOS package tests pass
 - [ ] `swiftlint lint` — zero violations
 

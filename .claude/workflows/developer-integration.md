@@ -127,10 +127,9 @@ Create a grouped list for budgets.
 Before asking Claude to commit, always verify:
 
 ```
-1. xcrun swift test -c debug          # macOS package tests
-2. xcodebuild test (iOS)              # iOS package tests
-3. swiftlint lint                     # Zero violations
-4. (if app files changed) App tests   # Both platforms
+1. xcodebuild test (iOS)              # iOS package tests
+2. swiftlint lint                     # Zero violations
+3. (if app files changed) App tests   # iOS
 ```
 
 You can ask Claude: **"Run the Definition of Done checks"** and it will execute all three.
@@ -141,14 +140,13 @@ You can ask Claude: **"Run the Definition of Done checks"** and it will execute 
 
 The GitHub Actions workflow (`.github/workflows/swift-tests.yml`) already runs:
 - SwiftLint with GitHub annotations
-- macOS package tests (`xcrun swift test`)
 - iOS Simulator tests (`xcodebuild test`)
 
 This runs on every push/PR to `main` that touches source files.
 
 ### Keeping Local and CI Aligned
 
-The same commands run locally and in CI. If Claude's DoD checks pass locally, CI will pass too. The only difference: CI runs on `macos-26` runners, while local dev is on your machine.
+The same commands run locally and in CI. If Claude's DoD checks pass locally, CI will pass too.
 
 ---
 
