@@ -9,6 +9,7 @@ import SwiftUI
 
 struct TransactionDetailView: View {
     @Environment(\.transactionHistoryLogger) private var logger
+    @Environment(\.modelContext) private var modelContext
     private let viewModel: TransactionDetailViewModel
 
     init(transaction: CardTransaction) {
@@ -18,25 +19,25 @@ struct TransactionDetailView: View {
     var body: some View {
         List {
             Section("Transaction") {
-                LabeledContent("Name", value: viewModel.transaction.name)
+                LabeledContent("Name", value: viewModel.name)
                 LabeledContent("Amount", value: viewModel.formattedAmount)
-                LabeledContent("Currency", value: viewModel.transaction.currency)
+                LabeledContent("Currency", value: viewModel.currency)
             }
             Section("Details") {
                 LabeledContent("Category", value: viewModel.category)
-                LabeledContent("Merchant", value: viewModel.transaction.merchant)
-                LabeledContent("Card", value: viewModel.transaction.card)
+                LabeledContent("Merchant", value: viewModel.merchant)
+                LabeledContent("Card", value: viewModel.card)
                 LabeledContent("Date", value: viewModel.formattedDate)
             }
         }
-        .navigationTitle(viewModel.transaction.name)
+        .navigationTitle(viewModel.name)
         .onAppear {
             logger.info(
                 "Displayed transaction detail",
                 metadata: [
-                    "transactionID": "\(viewModel.transaction.id.uuidString)",
-                    "merchant": "\(viewModel.transaction.merchant)",
-                    "category": "\(viewModel.transaction.category.rawValue)"
+                    "transactionID": "\(viewModel.id.uuidString)",
+                    "merchant": "\(viewModel.merchant)",
+                    "category": "\(viewModel.category)"
                 ]
             )
         }
