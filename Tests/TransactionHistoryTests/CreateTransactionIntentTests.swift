@@ -136,6 +136,7 @@ struct CreateTransactionIntentTests {
             amount: "€4.50",
             card: "Card 1",
             date: Date(timeIntervalSince1970: 500_000),
+            donate: false,
             container: container
         )
         // THEN the transaction is persisted in the container
@@ -163,6 +164,7 @@ struct CreateTransactionIntentTests {
                 amount: "xyz",
                 card: "Card",
                 date: Date(),
+                donate: false,
                 container: container
             )
         }
