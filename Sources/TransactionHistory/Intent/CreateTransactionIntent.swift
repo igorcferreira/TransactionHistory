@@ -57,12 +57,12 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         title: "Name",
         requestValueDialog: "What is the name of this transaction?"
     )
-    var name: String
+    var name: String?
     @Parameter(
         title: "Merchant",
         requestValueDialog: "Where was this transaction made?"
     )
-    var merchant: String
+    var merchant: String?
     @Parameter(
         title: "Amount",
         requestValueDialog: "How much was this transaction?"
@@ -72,7 +72,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         title: "Card",
         requestValueDialog: "Which card was used for this transaction?"
     )
-    var card: String
+    var card: String?
     @Parameter(
         title: "Purchase date",
         default: nil,
@@ -95,10 +95,10 @@ struct CreateTransactionIntent: AppIntent, Sendable {
             ]
         )
         let card = try createTransaction(.init(
-            name: name,
-            merchant: merchant,
+            name: name ?? "",
+            merchant: merchant ?? "",
             amount: amount,
-            card: card,
+            card: card ?? "",
             category: category ?? .generic,
             date: date
         ))
