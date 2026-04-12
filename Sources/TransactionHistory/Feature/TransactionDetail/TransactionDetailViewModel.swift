@@ -9,7 +9,7 @@ import SwiftData
 
 @Observable
 final class TransactionDetailViewModel {
-    private let transaction: CardTransaction
+    private(set) var transaction: CardTransaction
 
     let id: UUID
     let currency: String
@@ -43,7 +43,14 @@ final class TransactionDetailViewModel {
     var formattedAmount: String {
         transaction.formattedAmount
     }
-    
+
+    /// Restores editable fields to their last-persisted values.
+    func revert() {
+        name = transaction.name
+        merchant = transaction.merchant
+        card = transaction.card
+    }
+
     func save(on modelContext: ModelContext) throws {
         try modelContext.transaction {
             transaction.name = name
