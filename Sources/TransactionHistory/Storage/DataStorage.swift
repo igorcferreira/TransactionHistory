@@ -93,13 +93,15 @@ public struct DataStorage: Sendable {
 private extension DataStorage {
     static func createMockEnvironment(
         memoryOnly: Bool,
-        group: String = "group.dev.igorcferreira.TransactionHistoryApp"
+        group: String = "group.dev.igorcferreira.TransactionHistoryApp",
+        iCloudIdentifier: String = "iCloud.dev.igorcferreira.TransactionHistoryApp"
     ) -> ModelContainer {
         Self.logger.info(
             "Creating model container",
             metadata: [
                 "memoryOnly": "\(memoryOnly)",
-                "groupContainer": "\(memoryOnly ? "automatic" : group)"
+                "groupContainer": "\(memoryOnly ? "automatic" : group)",
+                "iCloud": "\(memoryOnly ? "none" : iCloudIdentifier)"
             ]
         )
         let schema = Schema([
@@ -111,7 +113,7 @@ private extension DataStorage {
             schema: schema,
             isStoredInMemoryOnly: memoryOnly,
             groupContainer: memoryOnly ? .automatic : .identifier(group),
-            cloudKitDatabase: memoryOnly ? .none : .automatic
+            cloudKitDatabase: memoryOnly ? .none : .private(iCloudIdentifier)
         )
 
         let container: ModelContainer
