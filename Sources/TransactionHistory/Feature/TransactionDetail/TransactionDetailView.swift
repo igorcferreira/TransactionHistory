@@ -24,7 +24,7 @@ struct TransactionDetailView: View {
         List {
             Section("Transaction") {
                 if isEditing {
-                    TextField("Name", text: $viewModel.name)
+                    EditableLabeledContent("Name", text: $viewModel.name)
                 } else {
                     LabeledContent("Name", value: viewModel.name)
                 }
@@ -34,8 +34,8 @@ struct TransactionDetailView: View {
             Section("Details") {
                 LabeledContent("Category", value: viewModel.category)
                 if isEditing {
-                    TextField("Merchant", text: $viewModel.merchant)
-                    TextField("Card", text: $viewModel.card)
+                    EditableLabeledContent("Merchant", text: $viewModel.merchant)
+                    EditableLabeledContent("Card", text: $viewModel.card)
                 } else {
                     LabeledContent("Merchant", value: viewModel.merchant)
                     LabeledContent("Card", value: viewModel.card)
