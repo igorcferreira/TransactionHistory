@@ -12,10 +12,18 @@ struct TransactionDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: TransactionDetailViewModel
     @State private var isEditing = false
+    @State private var isConfirmingDelete = false
     @State private var errorMessage: String?
 
-    init(transaction: CardTransaction) {
+    /// Called after the transaction has been successfully deleted.
+    var onTransactionDeleted: (() -> Void)?
+
+    init(
+        transaction: CardTransaction,
+        onTransactionDeleted: (() -> Void)? = nil
+    ) {
         self._viewModel = State(initialValue: .init(transaction: transaction))
+        self.onTransactionDeleted = onTransactionDeleted
     }
 
     var body: some View {
@@ -42,6 +50,23 @@ struct TransactionDetailView: View {
                 }
                 LabeledContent("Date", value: viewModel.formattedDate)
             }
+            if isEditing {
+                Section {
+                    Button("Delete Transaction", role: .destructive) {
+                        isConfirmingDelete = true
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+            }
+        }
+        .confirmationDialog(
+            "Delete Transaction",
+            isPresented: $isConfirmingDelete,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) { deleteTransaction() }
+        } message: {
+            Text("This transaction will be permanently deleted.")
         }
         .toast(message: $errorMessage)
         .navigationTitle(viewModel.name)
@@ -78,6 +103,26 @@ struct TransactionDetailView: View {
                     "category": "\(viewModel.category)"
                 ]
             )
+        }
+    }
+
+    private func deleteTransaction() {
+        let detailLogger = logger.scoped("feature.transactionDetail")
+        do {
+            try viewModel.delete(on: modelContext)
+            detailLogger.info(
+                "Transaction deleted",
+                metadata: ["id": "\(viewModel.id.uuidString)"]
+            )
+            onTransactionDeleted?()
+        } catch {
+            detailLogger.error(
+                "Failed to delete transaction",
+                metadata: ["error": "\(error)"]
+            )
+            withAnimation {
+                errorMessage = error.localizedDescription
+            }
         }
     }
 
