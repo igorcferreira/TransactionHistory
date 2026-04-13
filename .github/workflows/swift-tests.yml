@@ -9,6 +9,7 @@ on:
       - 'Package.swift'
       - 'Sources/**'
       - 'Tests/**'
+      - 'App/**'
       - '.github/workflows/swift-tests.yml'
   workflow_dispatch:
 
