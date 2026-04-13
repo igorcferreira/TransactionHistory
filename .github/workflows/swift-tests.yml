@@ -10,15 +10,6 @@ on:
       - 'Sources/**'
       - 'Tests/**'
       - '.github/workflows/swift-tests.yml'
-  push:
-    branches:
-      - main
-    paths:
-      - '.swiftlint.yml'
-      - 'Package.swift'
-      - 'Sources/**'
-      - 'Tests/**'
-      - '.github/workflows/swift-tests.yml'
   workflow_dispatch:
 
 jobs:
