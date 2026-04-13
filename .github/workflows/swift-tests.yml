@@ -12,6 +12,10 @@ on:
       - '.github/workflows/swift-tests.yml'
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   lint:
     name: Lint
@@ -29,9 +33,9 @@ jobs:
       - name: SwiftLint
         run: |
           # Run SwiftLint with GitHub annotations for PR comments
-          swiftlint lint --reporter github-actions-logging
+          swiftlint lint --strict --reporter github-actions-logging
           # Also generate JSON report for artifacts
-          swiftlint lint --reporter json > swiftlint-results.json || true
+          swiftlint lint --strict --reporter json > swiftlint-results.json || true
 
   test_package:
     name: Test Package
