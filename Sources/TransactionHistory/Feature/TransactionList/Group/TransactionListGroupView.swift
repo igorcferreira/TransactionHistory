@@ -17,6 +17,12 @@ struct TransactionListGroupView: View {
     /// Called when the user taps a transaction row.
     var onTransactionTapped: ((CardTransaction) -> Void)?
 
+    /// Binding for multi-select support in edit mode.
+    @Binding var selection: Set<UUID>
+
+    /// Binding for the list's edit mode state.
+    @Binding var editMode: EditMode
+
     private var groups: [TransactionGroup] {
         viewModel.grouped(
             transactions: transactions,
@@ -27,6 +33,8 @@ struct TransactionListGroupView: View {
     init(
         search: String = "",
         sortOrder: SortOrder = .reverse,
+        selection: Binding<Set<UUID>> = .constant([]),
+        editMode: Binding<EditMode> = .constant(.inactive),
         onTransactionTapped: ((CardTransaction) -> Void)? = nil
     ) {
         let viewModel = TransactionListGroupViewModel()
@@ -37,6 +45,8 @@ struct TransactionListGroupView: View {
         )
         self.sortOrder = sortOrder
         self.viewModel = viewModel
+        self._selection = selection
+        self._editMode = editMode
         self.onTransactionTapped = onTransactionTapped
     }
 
@@ -44,6 +54,8 @@ struct TransactionListGroupView: View {
         TransactionListGroupContentView(
             groups: groups,
             viewModel: viewModel,
+            selection: $selection,
+            editMode: $editMode,
             onTransactionTapped: onTransactionTapped
         )
     }

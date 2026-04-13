@@ -11,6 +11,7 @@ import SwiftData
 
 public struct TransactionListView: View {
     @Environment(\.transactionHistoryLogger) private var logger
+    @Environment(\.modelContext) private var modelContext
     @State private var viewModel = TransactionListViewModel()
 
     /// Called when the user taps a transaction in the list.
@@ -37,9 +38,12 @@ public struct TransactionListView: View {
             TransactionListGroupView(
                 search: viewModel.searchText,
                 sortOrder: viewModel.sortOrder,
+                selection: $viewModel.selection,
+                editMode: $viewModel.editMode,
                 onTransactionTapped: onTransactionTapped
             )
         }
+        .toast(message: $viewModel.errorMessage)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -47,6 +51,18 @@ public struct TransactionListView: View {
                     onAddTapped?()
                 } label: {
                     Label("Add Transaction", systemImage: "plus")
+                }
+            }
+            ToolbarItem(placement: .secondaryAction) {
+                EditButton()
+            }
+            if viewModel.hasSelection {
+                ToolbarItem(placement: .bottomBar) {
+                    Button(role: .destructive) {
+                        deleteSelected(logger: listLogger)
+                    } label: {
+                        Text("Delete (\(viewModel.selection.count))")
+                    }
                 }
             }
         }
@@ -66,6 +82,22 @@ public struct TransactionListView: View {
             listLogger.info(
                 "Changed transaction sort order",
                 metadata: ["sortOrder": "\(viewModel.sortOrder == .reverse ? "newestFirst" : "oldestFirst")"]
+            )
+        }
+    }
+
+    private func deleteSelected(logger: Logger) {
+        do {
+            let count = viewModel.selection.count
+            try viewModel.deleteSelected(on: modelContext)
+            logger.info(
+                "Deleted selected transactions",
+                metadata: ["count": "\(count)"]
+            )
+        } catch {
+            logger.error(
+                "Failed to delete selected transactions",
+                metadata: ["error": "\(error)"]
             )
         }
     }
