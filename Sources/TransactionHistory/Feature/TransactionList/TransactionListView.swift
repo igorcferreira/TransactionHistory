@@ -12,6 +12,7 @@ import SwiftData
 public struct TransactionListView: View {
     @Environment(\.transactionHistoryLogger) private var logger
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.editMode) private var editMode
     @State private var viewModel = TransactionListViewModel()
 
     /// Called when the user taps a transaction in the list.
@@ -52,7 +53,7 @@ public struct TransactionListView: View {
                     Label("Add Transaction", systemImage: "plus")
                 }
             }
-            ToolbarItem(placement: .secondaryAction) {
+            ToolbarItem(placement: .destructiveAction) {
                 EditButton()
             }
             if viewModel.hasSelection {
@@ -86,18 +87,13 @@ public struct TransactionListView: View {
     }
 
     private func deleteSelected(logger: Logger) {
-        do {
-            let count = viewModel.selection.count
-            try viewModel.deleteSelected(on: modelContext)
-            logger.info(
-                "Deleted selected transactions",
-                metadata: ["count": "\(count)"]
-            )
-        } catch {
-            logger.error(
-                "Failed to delete selected transactions",
-                metadata: ["error": "\(error)"]
-            )
+        let count = viewModel.selection.count
+        let edited = viewModel.deleteSelected(
+            on: modelContext,
+            logger: logger
+        )
+        if edited {
+            editMode?.wrappedValue = .inactive
         }
     }
 }

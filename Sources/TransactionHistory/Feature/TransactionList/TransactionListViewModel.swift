@@ -6,6 +6,7 @@
 //
 import Foundation
 import SwiftData
+import Logging
 
 /// Manages batched loading, sorting, and merchant search for the transaction list.
 @Observable
@@ -26,18 +27,37 @@ final class TransactionListViewModel {
     var hasSelection: Bool { !selection.isEmpty }
 
     /// Deletes all currently selected transactions from the store.
-    func deleteSelected(on modelContext: ModelContext) throws {
-        let selectedIDs = selection
-        try modelContext.transaction {
-            let descriptor = FetchDescriptor<CardTransaction>(
-                predicate: #Predicate { selectedIDs.contains($0.id) }
-            )
-            let toDelete = try modelContext.fetch(descriptor)
-            for item in toDelete {
-                modelContext.delete(item)
+    func deleteSelected(
+        on modelContext: ModelContext,
+        logger: Logger
+    ) -> Bool {
+        do {
+            errorMessage = nil
+            let count = selection.count
+            let selectedIDs = selection
+            try modelContext.transaction {
+                let descriptor = FetchDescriptor<CardTransaction>(
+                    predicate: #Predicate { selectedIDs.contains($0.id) }
+                )
+                let toDelete = try modelContext.fetch(descriptor)
+                for item in toDelete {
+                    modelContext.delete(item)
+                }
+                try modelContext.save()
             }
-            try modelContext.save()
+            selection.removeAll()
+            logger.info(
+                "Deleted selected transactions",
+                metadata: ["count": "\(count)"]
+            )
+            return true
+        } catch {
+            logger.error(
+                "Failed to delete selected transactions",
+                metadata: ["error": "\(error)"]
+            )
+            errorMessage = error.localizedDescription
+            return false
         }
-        selection.removeAll()
     }
 }

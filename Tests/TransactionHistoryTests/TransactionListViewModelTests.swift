@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 import Testing
+import Logging
 @testable import TransactionHistory
 
 @Suite("TransactionListViewModel")
@@ -58,11 +59,15 @@ struct TransactionListViewModelTests {
         viewModel.selection = [first.id, third.id]
 
         // WHEN deleting selected
-        try viewModel.deleteSelected(on: context)
+        let result = viewModel.deleteSelected(
+            on: context,
+            logger: Logger(label: "test_suit")
+        )
 
         // THEN only the unselected transaction remains
         let descriptor = FetchDescriptor<CardTransaction>()
         let remaining = try context.fetch(descriptor)
+        #expect(result, "The delete action must pass")
         #expect(remaining.count == 1)
         #expect(remaining.first?.name == "Second")
     }
@@ -79,9 +84,13 @@ struct TransactionListViewModelTests {
         viewModel.selection = [transaction.id]
 
         // WHEN deleting selected
-        try viewModel.deleteSelected(on: context)
+        let result = viewModel.deleteSelected(
+            on: context,
+            logger: Logger(label: "test_suit")
+        )
 
         // THEN selection is empty
+        #expect(result, "The delete action must pass")
         #expect(viewModel.selection.isEmpty)
     }
 
