@@ -11,6 +11,7 @@ import SwiftUI
 public struct TransactionCoordinatorView: View {
     @Environment(\.transactionHistoryLogger) private var logger
     @State private var viewModel = TransactionCoordinatorViewModel()
+    @State private var editMode: EditMode = .inactive
 
     public init() {}
 
@@ -55,6 +56,7 @@ public struct TransactionCoordinatorView: View {
         .onAppear {
             coordinatorLogger.info("Transaction coordinator displayed")
         }
+        .environment(\.editMode, $editMode)
     }
 }
 
