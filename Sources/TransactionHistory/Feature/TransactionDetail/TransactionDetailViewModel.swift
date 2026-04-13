@@ -59,4 +59,12 @@ final class TransactionDetailViewModel {
             try modelContext.save()
         }
     }
+
+    /// Permanently removes the transaction from the persistent store.
+    func delete(on modelContext: ModelContext) throws {
+        try modelContext.transaction {
+            modelContext.delete(transaction)
+            try modelContext.save()
+        }
+    }
 }
