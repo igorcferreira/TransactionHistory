@@ -5,6 +5,7 @@
 //  Created by Igor Ferreira on 14/03/2026.
 //
 import Foundation
+import SwiftData
 import Testing
 @testable import TransactionHistory
 
@@ -120,5 +121,59 @@ struct TransactionDetailViewModelTests {
         // WHEN accessing the transaction property
         // THEN it returns the same instance
         #expect(viewModel.transaction.id == transaction.id)
+    }
+
+    // MARK: - delete
+
+    /// Creates an in-memory ModelContainer for delete tests.
+    private static func makeContainer() throws -> ModelContainer {
+        let schema = Schema([CardTransaction.self])
+        let config = ModelConfiguration(
+            schema: schema,
+            isStoredInMemoryOnly: true,
+            cloudKitDatabase: .none
+        )
+        return try ModelContainer(for: schema, configurations: [config])
+    }
+
+    @Test("delete removes the transaction from the model context")
+    func deleteRemovesTransaction() throws {
+        // GIVEN a transaction inserted into an in-memory context
+        let container = try Self.makeContainer()
+        let context = ModelContext(container)
+        let transaction = Self.makeTransaction()
+        context.insert(transaction)
+        try context.save()
+
+        let viewModel = TransactionDetailViewModel(transaction: transaction)
+
+        // WHEN deleting the transaction
+        try viewModel.delete(on: context)
+
+        // THEN fetching all transactions returns an empty result
+        let descriptor = FetchDescriptor<CardTransaction>()
+        let remaining = try context.fetch(descriptor)
+        #expect(remaining.isEmpty)
+    }
+
+    @Test("delete persists the removal across contexts")
+    func deletePersistsRemoval() throws {
+        // GIVEN a transaction inserted and saved via one context
+        let container = try Self.makeContainer()
+        let context = ModelContext(container)
+        let transaction = Self.makeTransaction()
+        context.insert(transaction)
+        try context.save()
+
+        let viewModel = TransactionDetailViewModel(transaction: transaction)
+
+        // WHEN deleting the transaction
+        try viewModel.delete(on: context)
+
+        // THEN a fresh context on the same container also returns empty
+        let freshContext = ModelContext(container)
+        let descriptor = FetchDescriptor<CardTransaction>()
+        let remaining = try freshContext.fetch(descriptor)
+        #expect(remaining.isEmpty)
     }
 }
