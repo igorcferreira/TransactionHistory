@@ -79,4 +79,31 @@ struct TransactionCoordinatorViewModelTests {
         // THEN the path is empty
         #expect(viewModel.path.isEmpty)
     }
+
+    // MARK: - pop
+
+    @Test("pop removes only the last item from the path")
+    func popRemovesLastItem() {
+        // GIVEN a coordinator with two transactions in the path
+        let viewModel = TransactionCoordinatorViewModel()
+        let first = Self.makeTransaction()
+        let second = Self.makeTransaction()
+        viewModel.showDetail(for: first)
+        viewModel.showDetail(for: second)
+        // WHEN popping once
+        viewModel.pop()
+        // THEN the path contains only the first transaction
+        #expect(viewModel.path.count == 1)
+        #expect(viewModel.path.first?.id == first.id)
+    }
+
+    @Test("pop on empty path does nothing")
+    func popOnEmptyPathIsNoOp() {
+        // GIVEN a coordinator with an empty path
+        let viewModel = TransactionCoordinatorViewModel()
+        // WHEN popping
+        viewModel.pop()
+        // THEN the path remains empty
+        #expect(viewModel.path.isEmpty)
+    }
 }

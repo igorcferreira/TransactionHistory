@@ -33,7 +33,12 @@ public struct TransactionCoordinatorView: View {
                 coordinatorLogger.scoped("feature.transactionList")
             )
             .navigationDestination(for: CardTransaction.self) { transaction in
-                TransactionDetailView(transaction: transaction)
+                TransactionDetailView(
+                    transaction: transaction,
+                    onTransactionDeleted: {
+                        viewModel.pop(logger: coordinatorLogger)
+                    }
+                )
                     .transactionHistoryLogger(
                         coordinatorLogger.scoped("feature.transactionDetail")
                     )

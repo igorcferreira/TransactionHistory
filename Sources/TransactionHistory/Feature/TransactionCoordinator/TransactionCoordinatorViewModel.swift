@@ -39,6 +39,20 @@ final class TransactionCoordinatorViewModel {
         isAddingTransaction = true
     }
 
+    /// Pop the most recent screen from the navigation stack.
+    func pop(
+        logger: Logger = AppLogger.makeLogger(label: "feature.transactionCoordinator")
+    ) {
+        guard let removed = path.popLast() else { return }
+        logger.info(
+            "Popped transaction detail",
+            metadata: [
+                "transactionID": "\(removed.id.uuidString)",
+                "pathDepth": "\(path.count)"
+            ]
+        )
+    }
+
     /// Pop back to the transaction list.
     func popToRoot(
         logger: Logger = AppLogger.makeLogger(label: "feature.transactionCoordinator")

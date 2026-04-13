@@ -11,6 +11,8 @@ import SwiftData
 
 public struct TransactionListView: View {
     @Environment(\.transactionHistoryLogger) private var logger
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.editMode) private var editMode
     @State private var viewModel = TransactionListViewModel()
 
     /// Called when the user taps a transaction in the list.
@@ -37,9 +39,11 @@ public struct TransactionListView: View {
             TransactionListGroupView(
                 search: viewModel.searchText,
                 sortOrder: viewModel.sortOrder,
+                selection: $viewModel.selection,
                 onTransactionTapped: onTransactionTapped
             )
         }
+        .toast(message: $viewModel.errorMessage)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
                 Button {
@@ -47,6 +51,18 @@ public struct TransactionListView: View {
                     onAddTapped?()
                 } label: {
                     Label("Add Transaction", systemImage: "plus")
+                }
+            }
+            ToolbarItem(placement: .destructiveAction) {
+                EditButton()
+            }
+            if viewModel.hasSelection {
+                ToolbarItem(placement: .bottomBar) {
+                    Button(role: .destructive) {
+                        deleteSelected(logger: listLogger)
+                    } label: {
+                        Text("Delete (\(viewModel.selection.count))")
+                    }
                 }
             }
         }
@@ -69,9 +85,22 @@ public struct TransactionListView: View {
             )
         }
     }
+
+    private func deleteSelected(logger: Logger) {
+        let count = viewModel.selection.count
+        let edited = viewModel.deleteSelected(
+            on: modelContext,
+            logger: logger
+        )
+        if edited {
+            editMode?.wrappedValue = .inactive
+        }
+    }
 }
 
 #Preview {
-    TransactionListView()
-        .includingMocks()
+    NavigationStack {
+        TransactionListView()
+    }
+    .includingMocks()
 }
