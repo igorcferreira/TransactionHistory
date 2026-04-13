@@ -12,7 +12,6 @@ import SwiftData
 public struct TransactionListView: View {
     @Environment(\.transactionHistoryLogger) private var logger
     @Environment(\.modelContext) private var modelContext
-    @Environment(\.editMode) private var editMode
     @State private var viewModel = TransactionListViewModel()
 
     /// Called when the user taps a transaction in the list.
@@ -90,7 +89,6 @@ public struct TransactionListView: View {
         do {
             let count = viewModel.selection.count
             try viewModel.deleteSelected(on: modelContext)
-            editMode?.wrappedValue = .inactive
             logger.info(
                 "Deleted selected transactions",
                 metadata: ["count": "\(count)"]
