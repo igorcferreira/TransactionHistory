@@ -73,7 +73,6 @@ struct TransactionListGroupContentView: View {
                 .id("section_\(group.id)")
             }
         }
-        .environment(\.editMode, $editMode)
         .listStyle(.plain)
         .toast(message: $errorMessage)
         .id("transaction_list")

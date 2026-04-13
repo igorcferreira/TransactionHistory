@@ -43,6 +43,7 @@ public struct TransactionListView: View {
                 onTransactionTapped: onTransactionTapped
             )
         }
+        .environment(\.editMode, $viewModel.editMode)
         .toast(message: $viewModel.errorMessage)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -104,6 +105,8 @@ public struct TransactionListView: View {
 }
 
 #Preview {
-    TransactionListView()
-        .includingMocks()
+    NavigationStack {
+        TransactionListView()
+    }
+    .includingMocks()
 }
