@@ -56,6 +56,60 @@ struct TransactionDetailViewModelTests {
         #expect(result.contains("1970"))
     }
 
+    // MARK: - revert
+
+    @Test("revert restores name to original value after mutation")
+    func revertRestoresName() {
+        // GIVEN a view model whose name has been changed
+        let transaction = Self.makeTransaction()
+        let viewModel = TransactionDetailViewModel(transaction: transaction)
+        viewModel.name = "Changed Name"
+        // WHEN reverting
+        viewModel.revert()
+        // THEN the name matches the original transaction
+        #expect(viewModel.name == "Test Transaction")
+    }
+
+    @Test("revert restores merchant to original value after mutation")
+    func revertRestoresMerchant() {
+        // GIVEN a view model whose merchant has been changed
+        let transaction = Self.makeTransaction()
+        let viewModel = TransactionDetailViewModel(transaction: transaction)
+        viewModel.merchant = "Changed Merchant"
+        // WHEN reverting
+        viewModel.revert()
+        // THEN the merchant matches the original transaction
+        #expect(viewModel.merchant == "Test Merchant")
+    }
+
+    @Test("revert restores card to original value after mutation")
+    func revertRestoresCard() {
+        // GIVEN a view model whose card has been changed
+        let transaction = Self.makeTransaction()
+        let viewModel = TransactionDetailViewModel(transaction: transaction)
+        viewModel.card = "Changed Card"
+        // WHEN reverting
+        viewModel.revert()
+        // THEN the card matches the original transaction
+        #expect(viewModel.card == "Test Card")
+    }
+
+    @Test("revert restores all editable fields after multiple mutations")
+    func revertRestoresAllFields() {
+        // GIVEN a view model with all editable fields changed
+        let transaction = Self.makeTransaction()
+        let viewModel = TransactionDetailViewModel(transaction: transaction)
+        viewModel.name = "New Name"
+        viewModel.merchant = "New Merchant"
+        viewModel.card = "New Card"
+        // WHEN reverting
+        viewModel.revert()
+        // THEN all fields match the original transaction
+        #expect(viewModel.name == "Test Transaction")
+        #expect(viewModel.merchant == "Test Merchant")
+        #expect(viewModel.card == "Test Card")
+    }
+
     // MARK: - transaction
 
     @Test("transaction property returns the injected transaction")

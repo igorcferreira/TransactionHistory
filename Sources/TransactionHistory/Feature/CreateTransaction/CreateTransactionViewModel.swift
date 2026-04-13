@@ -80,6 +80,7 @@ final class CreateTransactionViewModel {
     /// the record in the given context and donates the intent to Siri.
     func save(
         in container: ModelContainer,
+        donate: Bool = true,
         logger: Logger = AppLogger.makeLogger(label: "feature.createTransaction")
     ) async throws {
         guard let amount = parsedAmount else {
@@ -118,6 +119,7 @@ final class CreateTransactionViewModel {
             amount: formattedAmount,
             card: trimmedCard,
             date: resolvedDate,
+            donate: donate,
             container: container,
             logger: logger
         )

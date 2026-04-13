@@ -174,7 +174,7 @@ struct CreateTransactionViewModelTests {
         let container = try Self.makeContainer()
         // WHEN saving
         let before = Date()
-        try await viewModel.save(in: container)
+        try await viewModel.save(in: container, donate: false)
         let after = Date()
         // THEN the transaction's createdAt is approximately now
         let context = ModelContext(container)
@@ -192,7 +192,7 @@ struct CreateTransactionViewModelTests {
         viewModel.date = explicitDate
         let container = try Self.makeContainer()
         // WHEN saving
-        try await viewModel.save(in: container)
+        try await viewModel.save(in: container, donate: false)
         // THEN the transaction's createdAt matches the explicit date
         let context = ModelContext(container)
         let transactions = try context.fetch(FetchDescriptor<CardTransaction>())
@@ -206,7 +206,7 @@ struct CreateTransactionViewModelTests {
         let viewModel = Self.makeValidViewModel()
         let container = try Self.makeContainer()
         // WHEN saving
-        try await viewModel.save(in: container)
+        try await viewModel.save(in: container, donate: false)
         // THEN a transaction is inserted with matching values
         let context = ModelContext(container)
         let transactions = try context.fetch(FetchDescriptor<CardTransaction>())
