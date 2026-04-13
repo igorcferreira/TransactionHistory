@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftData
-import SwiftUI
 import Testing
 @testable import TransactionHistory
 
@@ -57,7 +56,6 @@ struct TransactionListViewModelTests {
 
         let viewModel = TransactionListViewModel()
         viewModel.selection = [first.id, third.id]
-        viewModel.editMode = .active
 
         // WHEN deleting selected
         try viewModel.deleteSelected(on: context)
@@ -69,8 +67,8 @@ struct TransactionListViewModelTests {
         #expect(remaining.first?.name == "Second")
     }
 
-    @Test("deleteSelected clears selection and exits edit mode")
-    func deleteSelectedClearsState() throws {
+    @Test("deleteSelected clears selection")
+    func deleteSelectedClearsSelection() throws {
         // GIVEN a context with one selected transaction
         let container = try Self.makeContainer()
         let context = ModelContext(container)
@@ -79,14 +77,12 @@ struct TransactionListViewModelTests {
 
         let viewModel = TransactionListViewModel()
         viewModel.selection = [transaction.id]
-        viewModel.editMode = .active
 
         // WHEN deleting selected
         try viewModel.deleteSelected(on: context)
 
-        // THEN selection is empty and edit mode is inactive
+        // THEN selection is empty
         #expect(viewModel.selection.isEmpty)
-        #expect(viewModel.editMode == .inactive)
     }
 
     // MARK: - hasSelection

@@ -6,7 +6,6 @@
 //
 import Foundation
 import SwiftData
-import SwiftUI
 
 /// Manages batched loading, sorting, and merchant search for the transaction list.
 @Observable
@@ -19,9 +18,6 @@ final class TransactionListViewModel {
 
     /// IDs of transactions selected for batch operations.
     var selection: Set<UUID> = []
-
-    /// Current edit mode for multi-select.
-    var editMode: EditMode = .inactive
 
     /// Error message surfaced to the user via toast.
     var errorMessage: String?
@@ -43,6 +39,5 @@ final class TransactionListViewModel {
             try modelContext.save()
         }
         selection.removeAll()
-        editMode = .inactive
     }
 }
