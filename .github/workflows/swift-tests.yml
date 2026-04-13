@@ -28,7 +28,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install SwiftLint
         run: |
           if ! command -v swiftlint &> /dev/null; then
@@ -49,7 +49,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run iOS package tests
         run: |
           xcodebuild test -configuration Debug \
@@ -63,7 +63,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run iOS app tests
         run: |
           (cd App ; xcodebuild test -configuration Debug \
