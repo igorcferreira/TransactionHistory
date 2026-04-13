@@ -9,7 +9,7 @@ import SwiftUI
 struct EditableLabeledContent: View {
     let label: String
     @Binding var text: String
-    
+
     init(
         _ label: String,
         text: Binding<String>
@@ -17,7 +17,7 @@ struct EditableLabeledContent: View {
         self.label = label
         self._text = text
     }
-    
+
     var body: some View {
         HStack(spacing: 4.0) {
             Text("\(label):")
