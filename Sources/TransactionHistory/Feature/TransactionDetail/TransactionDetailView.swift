@@ -40,11 +40,17 @@ struct TransactionDetailView: View {
                 LabeledContent("Currency", value: viewModel.currency)
             }
             Section("Details") {
-                LabeledContent("Category", value: viewModel.category)
                 if isEditing {
+                    Picker("Category", selection: $viewModel.category) {
+                        ForEach(viewModel.selectableCategories, id: \.self) { category in
+                            Text(viewModel.displayName(for: category))
+                                .tag(category)
+                        }
+                    }
                     EditableLabeledContent("Merchant", text: $viewModel.merchant)
                     EditableLabeledContent("Card", text: $viewModel.card)
                 } else {
+                    LabeledContent("Category", value: viewModel.categoryDisplayName)
                     LabeledContent("Merchant", value: viewModel.merchant)
                     LabeledContent("Card", value: viewModel.card)
                 }
@@ -100,7 +106,7 @@ struct TransactionDetailView: View {
                 metadata: [
                     "transactionID": "\(viewModel.id.uuidString)",
                     "merchant": "\(viewModel.merchant)",
-                    "category": "\(viewModel.category)"
+                    "category": "\(viewModel.categoryDisplayName)"
                 ]
             )
         }

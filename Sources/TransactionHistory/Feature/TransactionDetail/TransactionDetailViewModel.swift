@@ -17,12 +17,14 @@ final class TransactionDetailViewModel {
     var name: String
     var merchant: String
     var card: String
+    var category: EntryCategory
 
     init(transaction: CardTransaction) {
         self.transaction = transaction
         self.name = transaction.name
         self.merchant = transaction.merchant
         self.card = transaction.card
+        self.category = transaction.category
         self.currency = transaction.currency
         self.id = transaction.id
     }
@@ -34,9 +36,20 @@ final class TransactionDetailViewModel {
         )
     }
 
-    /// Formatted Category Name
-    var category: String {
-        .init(localized: .init(stringLiteral: transaction.category.rawValue.capitalized))
+    /// Localised display name for the currently selected category.
+    /// Reflects pending edits while in edit mode.
+    var categoryDisplayName: String {
+        displayName(for: category)
+    }
+
+    /// Ordered list of categories offered to the user in the category picker.
+    /// Centralised here so the View never reaches into `EntryCategory.allCases` directly.
+    var selectableCategories: [EntryCategory] { EntryCategory.allCases }
+
+    /// Maps an `EntryCategory` to a user-facing localised string.
+    /// The View must call this instead of formatting the enum itself.
+    func displayName(for category: EntryCategory) -> String {
+        .init(localized: .init(stringLiteral: category.rawValue.capitalized))
     }
 
     /// Locale-formatted currency string delegated to the model.
@@ -49,6 +62,7 @@ final class TransactionDetailViewModel {
         name = transaction.name
         merchant = transaction.merchant
         card = transaction.card
+        category = transaction.category
     }
 
     func save(on modelContext: ModelContext) throws {
@@ -56,6 +70,7 @@ final class TransactionDetailViewModel {
             transaction.name = name
             transaction.merchant = merchant
             transaction.card = card
+            transaction.category = category
             try modelContext.save()
         }
     }
