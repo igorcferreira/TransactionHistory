@@ -17,6 +17,7 @@ struct TransactionDetailViewModelTests {
     private static func makeTransaction(
         amount: Double = 12.34,
         currency: String = "EUR",
+        category: EntryCategory = .generic,
         createdAt: Date = Date()
     ) -> CardTransaction {
         CardTransaction(
@@ -25,7 +26,7 @@ struct TransactionDetailViewModelTests {
             amount: amount,
             merchant: "Test Merchant",
             card: "Test Card",
-            category: .generic,
+            category: category,
             createdAt: createdAt
         )
     }
@@ -95,20 +96,78 @@ struct TransactionDetailViewModelTests {
         #expect(viewModel.card == "Test Card")
     }
 
+    @Test("revert restores category to original value after mutation")
+    func revertRestoresCategory() {
+        // GIVEN a view model whose category has been changed
+        let transaction = Self.makeTransaction(category: .food)
+        let viewModel = TransactionDetailViewModel(transaction: transaction)
+        viewModel.category = .travel
+        // WHEN reverting
+        viewModel.revert()
+        // THEN the category matches the original transaction
+        #expect(viewModel.category == .food)
+    }
+
     @Test("revert restores all editable fields after multiple mutations")
     func revertRestoresAllFields() {
         // GIVEN a view model with all editable fields changed
-        let transaction = Self.makeTransaction()
+        let transaction = Self.makeTransaction(category: .shopping)
         let viewModel = TransactionDetailViewModel(transaction: transaction)
         viewModel.name = "New Name"
         viewModel.merchant = "New Merchant"
         viewModel.card = "New Card"
+        viewModel.category = .travel
         // WHEN reverting
         viewModel.revert()
         // THEN all fields match the original transaction
         #expect(viewModel.name == "Test Transaction")
         #expect(viewModel.merchant == "Test Merchant")
         #expect(viewModel.card == "Test Card")
+        #expect(viewModel.category == .shopping)
+    }
+
+    // MARK: - category
+
+    @Test("init copies category from the transaction")
+    func initSetsCategoryFromTransaction() {
+        // GIVEN a transaction with a specific category
+        let transaction = Self.makeTransaction(category: .food)
+        // WHEN creating a view model
+        let viewModel = TransactionDetailViewModel(transaction: transaction)
+        // THEN the view model exposes the same category
+        #expect(viewModel.category == .food)
+    }
+
+    @Test("categoryDisplayName follows the current category, not the persisted one")
+    func categoryDisplayNameReflectsCurrentCategory() {
+        // GIVEN a view model whose category has been changed in memory
+        let transaction = Self.makeTransaction(category: .generic)
+        let viewModel = TransactionDetailViewModel(transaction: transaction)
+        viewModel.category = .shopping
+        // WHEN reading the display name
+        let result = viewModel.categoryDisplayName
+        // THEN the display name reflects the new selection
+        #expect(result.contains("Shopping"))
+    }
+
+    @Test("displayName formats an arbitrary category into a user-facing string")
+    func displayNameFormatsCategory() {
+        // GIVEN a view model
+        let viewModel = TransactionDetailViewModel(transaction: Self.makeTransaction())
+        // WHEN formatting a category
+        let result = viewModel.displayName(for: .travel)
+        // THEN the result contains the human-readable label
+        #expect(result.contains("Travel"))
+    }
+
+    @Test("selectableCategories exposes every EntryCategory case")
+    func selectableCategoriesCoversAllCases() {
+        // GIVEN a view model
+        let viewModel = TransactionDetailViewModel(transaction: Self.makeTransaction())
+        // WHEN reading selectableCategories
+        let result = viewModel.selectableCategories
+        // THEN it contains the full set of cases
+        #expect(result == EntryCategory.allCases)
     }
 
     // MARK: - transaction
@@ -154,6 +213,29 @@ struct TransactionDetailViewModelTests {
         let descriptor = FetchDescriptor<CardTransaction>()
         let remaining = try context.fetch(descriptor)
         #expect(remaining.isEmpty)
+    }
+
+    @Test("save persists an updated category across contexts")
+    func saveUpdatesCategoryOnTransaction() throws {
+        // GIVEN a transaction with .generic inserted into an in-memory context
+        let container = try Self.makeContainer()
+        let context = ModelContext(container)
+        let transaction = Self.makeTransaction(category: .generic)
+        context.insert(transaction)
+        try context.save()
+
+        let viewModel = TransactionDetailViewModel(transaction: transaction)
+        viewModel.category = .travel
+
+        // WHEN saving the view model
+        try viewModel.save(on: context)
+
+        // THEN a fresh context sees the updated category
+        let freshContext = ModelContext(container)
+        let descriptor = FetchDescriptor<CardTransaction>()
+        let fetched = try freshContext.fetch(descriptor)
+        let persisted = try #require(fetched.first)
+        #expect(persisted.category == .travel)
     }
 
     @Test("delete persists the removal across contexts")
