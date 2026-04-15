@@ -24,7 +24,7 @@ struct TransactionHistoryApp: App {
 
     var body: some Scene {
         WindowGroup {
-            TransactionCoordinatorView()
+            AppCoordinatorView()
         }
         .modelContainer(dataStorage.sharedModelContainer)
     }

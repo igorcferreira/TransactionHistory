@@ -104,3 +104,10 @@ public struct TransactionListView: View {
     }
     .includingMocks()
 }
+
+#Preview("Empty State") {
+    NavigationStack {
+        TransactionListView()
+    }
+    .modelContainer(for: CardTransaction.self, inMemory: true)
+}

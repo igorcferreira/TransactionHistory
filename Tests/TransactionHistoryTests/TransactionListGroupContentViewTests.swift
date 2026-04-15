@@ -47,14 +47,14 @@ struct TransactionListGroupContentViewTests {
 
     // MARK: - Empty state
 
-    @Test("Empty groups renders list with no sections")
+    @Test("Empty groups renders empty state instead of list")
     func emptyGroups() throws {
         // GIVEN no transaction groups
         let view = TransactionListGroupContentView(groups: [])
         // WHEN inspecting the view
         let inspected = try view.inspect()
-        // THEN the list exists with expected ID
-        _ = try inspected.find(viewWithId: "transaction_list")
+        // THEN the empty state is shown
+        _ = try inspected.find(ViewType.ContentUnavailableView.self)
     }
 
     // MARK: - Section headers

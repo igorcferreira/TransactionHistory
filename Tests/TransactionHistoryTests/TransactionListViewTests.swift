@@ -75,14 +75,14 @@ struct TransactionListViewTests {
         )
     }
 
-    @Test("Transaction list is present with expected identifier")
-    func transactionListPresent() throws {
-        // GIVEN a TransactionListView
+    @Test("Empty transaction list shows empty state")
+    func transactionListEmpty() throws {
+        // GIVEN a TransactionListView with no data
         let view = TransactionListView()
         // WHEN inspecting the view
         let inspected = try view.inspect()
-        // THEN a view with ID "transaction_list" exists
-        _ = try inspected.find(viewWithId: "transaction_list")
+        // THEN the empty state is shown
+        _ = try inspected.find(ViewType.ContentUnavailableView.self)
     }
 
 }

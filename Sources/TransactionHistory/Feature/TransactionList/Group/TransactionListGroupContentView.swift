@@ -37,40 +37,50 @@ struct TransactionListGroupContentView: View {
     }
 
     var body: some View {
-        List(selection: $selection) {
-            ForEach(groups) { group in
-                Section {
-                    Iterate(group.transactions.enumerated()) { transaction in
-                        Button {
-                            onTransactionTapped?(transaction)
-                        } label: {
-                            ShortTransactionView(
-                                transaction: transaction
-                            )
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
-                        .swipeActions(edge: .leading, allowsFullSwipe: true) {
-                            Button(role: .destructive) {
-                                deleteTransaction(transaction)
-                            } label: {
-                                Label("Delete", systemImage: "trash")
+        Group {
+            if groups.isEmpty {
+                ContentUnavailableView(
+                    "No Transactions",
+                    systemImage: "list.bullet",
+                    description: Text("Tap + to add your first transaction.")
+                )
+            } else {
+                List(selection: $selection) {
+                    ForEach(groups) { group in
+                        Section {
+                            Iterate(group.transactions.enumerated()) { transaction in
+                                Button {
+                                    onTransactionTapped?(transaction)
+                                } label: {
+                                    ShortTransactionView(
+                                        transaction: transaction
+                                    )
+                                    .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
+                                .swipeActions(edge: .leading, allowsFullSwipe: true) {
+                                    Button(role: .destructive) {
+                                        deleteTransaction(transaction)
+                                    } label: {
+                                        Label("Delete", systemImage: "trash")
+                                    }
+                                }
+                                .tag(transaction.id)
                             }
+                        } header: {
+                            Text(viewModel.sectionTitle(for: group.date))
+                                .font(.headline)
+                                .textCase(.uppercase)
+                                .id("section_\(group.id)_header")
                         }
-                        .tag(transaction.id)
+                        .id("section_\(group.id)")
                     }
-                } header: {
-                    Text(viewModel.sectionTitle(for: group.date))
-                        .font(.headline)
-                        .textCase(.uppercase)
-                        .id("section_\(group.id)_header")
                 }
-                .id("section_\(group.id)")
+                .listStyle(.plain)
+                .id("transaction_list")
             }
         }
-        .listStyle(.plain)
         .toast(message: $errorMessage)
-        .id("transaction_list")
     }
 
     private func deleteTransaction(_ transaction: CardTransaction) {
