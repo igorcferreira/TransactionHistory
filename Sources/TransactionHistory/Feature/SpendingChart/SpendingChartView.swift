@@ -2,17 +2,67 @@
 //  SpendingChartView.swift
 //  TransactionHistory
 //
-//  Created by Igor Ferreira on 15/04/2026.
-//
 
 import Charts
 import SwiftData
 import SwiftUI
 
-/// Displays a pie chart of total spending per category.
+/// Displays a per-month pie chart of spending by category.
+///
+/// Navigation state lives here; `SpendingChartContent` owns the `@Query` so SwiftData
+/// applies the date filter in the database rather than loading every transaction.
 struct SpendingChartView: View {
-    @Query private var transactions: [CardTransaction]
     @State private var viewModel = SpendingChartViewModel()
+
+    var body: some View {
+        VStack(spacing: 0) {
+            monthNavigationBar
+                .padding(.horizontal)
+                .padding(.vertical, 8)
+
+            // Passing selectedYearMonth explicitly causes the child init to re-run
+            // whenever the month changes, which updates the @Query predicate.
+            SpendingChartContent(viewModel: viewModel, selectedYearMonth: viewModel.selectedYearMonth)
+        }
+        .navigationTitle("Spending by Category")
+    }
+
+    private var monthNavigationBar: some View {
+        HStack {
+            Button {
+                viewModel.goToPreviousMonth()
+            } label: {
+                Image(systemName: "chevron.left")
+                    .imageScale(.large)
+            }
+            Spacer()
+            Text(viewModel.selectedYearMonth.displayTitle)
+                .font(.headline)
+            Spacer()
+            Button {
+                viewModel.goToNextMonth()
+            } label: {
+                Image(systemName: "chevron.right")
+                    .imageScale(.large)
+            }
+            .disabled(!viewModel.canGoToNextMonth)
+        }
+    }
+}
+
+// MARK: - Content (owns the filtered @Query)
+
+/// Renders the chart for a specific month.
+/// Its `init` rebuilds the `@Query` predicate whenever `selectedYearMonth` changes,
+/// so the database engine does the filtering instead of in-memory iteration.
+private struct SpendingChartContent: View {
+    @Query private var transactions: [CardTransaction]
+    @Bindable var viewModel: SpendingChartViewModel
+
+    init(viewModel: SpendingChartViewModel, selectedYearMonth: YearMonth) {
+        self._transactions = viewModel.createQuery(for: selectedYearMonth)
+        self.viewModel = viewModel
+    }
 
     var body: some View {
         Group {
@@ -33,7 +83,6 @@ struct SpendingChartView: View {
                 }
             }
         }
-        .navigationTitle("Spending by Category")
         .onAppear {
             viewModel.aggregate(transactions: transactions)
         }
@@ -85,6 +134,8 @@ struct SpendingChartView: View {
         }
     }
 }
+
+// MARK: - Previews
 
 #Preview {
     NavigationStack {

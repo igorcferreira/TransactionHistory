@@ -2,10 +2,55 @@
 //  SpendingChartViewModel.swift
 //  TransactionHistory
 //
-//  Created by Igor Ferreira on 15/04/2026.
-//
 
 import Foundation
+import SwiftData
+import SwiftUI
+
+// A year+month pair used to scope the chart to a single calendar month.
+struct YearMonth: Hashable, Comparable {
+    let year: Int
+    let month: Int
+
+    static var current: YearMonth {
+        let components = Calendar.current.dateComponents([.year, .month], from: Date())
+        return YearMonth(year: components.year ?? 0, month: components.month ?? 1)
+    }
+
+    func previous() -> YearMonth {
+        month == 1 ? YearMonth(year: year - 1, month: 12) : YearMonth(year: year, month: month - 1)
+    }
+
+    func next() -> YearMonth {
+        month == 12 ? YearMonth(year: year + 1, month: 1) : YearMonth(year: year, month: month + 1)
+    }
+
+    /// Locale-formatted string, e.g. "April 2026".
+    var displayTitle: String {
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = 1
+        guard let date = Calendar.current.date(from: components) else { return "" }
+        return date.formatted(.dateTime.month(.wide).year())
+    }
+
+    /// The full calendar month as a half-open interval [start, start+1 month).
+    var dateInterval: DateInterval {
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = 1
+        let calendar = Calendar.current
+        let start = calendar.date(from: components) ?? Date()
+        let end = calendar.date(byAdding: .month, value: 1, to: start) ?? Date()
+        return DateInterval(start: start, end: end)
+    }
+
+    static func < (lhs: YearMonth, rhs: YearMonth) -> Bool {
+        lhs.year != rhs.year ? lhs.year < rhs.year : lhs.month < rhs.month
+    }
+}
 
 /// Aggregates transaction data by category for chart display.
 @Observable
@@ -40,6 +85,9 @@ final class SpendingChartViewModel {
     /// Aggregated totals per category, sorted descending by amount.
     private(set) var categoryTotals: [CategoryTotal] = []
 
+    /// The calendar month currently shown in the chart.
+    var selectedYearMonth: YearMonth = .current
+
     /// Whether there are multiple currencies to choose from.
     var hasMultipleCurrencies: Bool {
         availableCurrencies.count > 1
@@ -50,8 +98,35 @@ final class SpendingChartViewModel {
         categoryTotals.isEmpty
     }
 
-    /// Filters, groups, and aggregates transactions. Call this when the
-    /// transaction list changes; it auto-selects the most common currency.
+    /// Whether the user can navigate forward to a later month.
+    var canGoToNextMonth: Bool {
+        selectedYearMonth < .current
+    }
+
+    /// Moves back one calendar month.
+    func goToPreviousMonth() {
+        selectedYearMonth = selectedYearMonth.previous()
+    }
+
+    /// Moves forward one calendar month (capped at current month).
+    func goToNextMonth() {
+        selectedYearMonth = selectedYearMonth.next()
+    }
+
+    /// Returns a SwiftData query that fetches only transactions in the given month,
+    /// letting the database engine apply the date filter rather than loading all rows.
+    func createQuery(for month: YearMonth) -> Query<CardTransaction, [CardTransaction]> {
+        let start = month.dateInterval.start
+        let end = month.dateInterval.end
+        return Query(
+            filter: #Predicate<CardTransaction> { $0.createdAt >= start && $0.createdAt < end },
+            sort: [SortDescriptor(\.createdAt, order: .reverse)]
+        )
+    }
+
+    /// Groups and aggregates the provided transactions by category.
+    /// The caller is responsible for supplying only the relevant transactions
+    /// (date filtering is handled by the SwiftData query, not here).
     func aggregate(transactions: [CardTransaction]) {
         // Exclude NaN, infinite, and non-positive amounts (e.g. refunds).
         let valid = transactions.filter { $0.amount.isFinite && $0.amount > 0 }
@@ -68,9 +143,8 @@ final class SpendingChartViewModel {
         buildTotals(from: byCurrency)
     }
 
-    /// Re-aggregates for the currently selected currency without
-    /// recomputing currency lists or auto-selecting. Call this when
-    /// only `selectedCurrency` changes (e.g. picker interaction).
+    /// Re-aggregates for the currently selected currency without recomputing currency
+    /// lists or auto-selecting. Call this when only `selectedCurrency` changes.
     func rebuildForSelectedCurrency(transactions: [CardTransaction]) {
         let valid = transactions.filter { $0.amount.isFinite && $0.amount > 0 }
         let byCurrency = Dictionary(grouping: valid) { $0.currency }
