@@ -135,53 +135,10 @@ private extension DataStorage {
 
         // Seed sample data for in-memory environments (simulator / tests).
         if memoryOnly {
-            Self.seedMockData(in: container)
+            MockDataSeeder.seed(in: container)
         }
 
         return container
-    }
-
-    /// Inserts sample transactions spread over the last 5 days.
-    static func seedMockData(in container: ModelContainer) {
-        let context = ModelContext(container)
-
-        let merchants = [
-            "Coffee Corner", "TechStore", "Grocery Mart",
-            "Book Haven", "Gas Station", "Coffee Corner",
-            "Pharmacy Plus", "TechStore", "Restaurant Lux"
-        ]
-
-        let now = Date()
-        let calendar = Calendar.current
-
-        do {
-            try context.transaction {
-                for index in (1..<10) {
-                    // Spread transactions across the last 5 days.
-                    let daysAgo = (index - 1) * 5 / 9
-                    let date = calendar.date(
-                        byAdding: .day, value: -daysAgo, to: now
-                    ) ?? now
-
-                    context.insert(CardTransaction(
-                        name: "Transaction \(index)",
-                        currency: "EUR",
-                        amount: Double.random(in: 0.5..<100.0),
-                        merchant: merchants[index - 1],
-                        card: "Card 1",
-                        category: EntryCategory.allCases.randomElement() ?? .generic,
-                        createdAt: date,
-                    ))
-                }
-                try context.save()
-            }
-            Self.logger.debug("Seeded mock transaction data", metadata: ["count": "9"])
-        } catch {
-            Self.logger.error(
-                "Failed to seed mock transaction data",
-                metadata: ["error": "\(error)"]
-            )
-        }
     }
 }
 
