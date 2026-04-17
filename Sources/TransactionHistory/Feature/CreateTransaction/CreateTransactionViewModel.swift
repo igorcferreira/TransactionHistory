@@ -25,6 +25,7 @@ final class CreateTransactionViewModel {
     var currency: String = Locale.current.currency?.identifier ?? "EUR"
     var card: String = ""
     var date: Date?
+    var category: EntryCategory = .generic
 
     // MARK: - Common currencies
 
@@ -108,6 +109,7 @@ final class CreateTransactionViewModel {
                 "merchant": "\(trimmedMerchant)",
                 "currency": "\(currency)",
                 "amount": "\(amount)",
+                "category": "\(category.rawValue)",
                 "hasCustomDate": "\(date != nil)"
             ]
         )
@@ -118,6 +120,7 @@ final class CreateTransactionViewModel {
             merchant: trimmedMerchant,
             amount: formattedAmount,
             card: trimmedCard,
+            category: category,
             date: resolvedDate,
             donate: donate,
             container: container,

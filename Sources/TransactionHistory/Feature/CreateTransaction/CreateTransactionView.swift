@@ -46,6 +46,11 @@ struct CreateTransactionView: View {
 
             Section("Details") {
                 TextField("Card", text: $viewModel.card)
+                Picker("Category", selection: $viewModel.category) {
+                    ForEach(EntryCategory.allCases, id: \.self) { cat in
+                        Text(cat.rawValue).tag(cat)
+                    }
+                }
                 Toggle("Custom Date", isOn: $useCustomDate)
                 if useCustomDate {
                     DatePicker(
