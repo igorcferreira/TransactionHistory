@@ -30,6 +30,7 @@ struct SpendingChartViewModelTests {
         currency: String = "EUR",
         amount: Double = 10.0,
         category: EntryCategory = .generic,
+        date: Date = Date(),
         in context: ModelContext
     ) -> CardTransaction {
         let transaction = CardTransaction(
@@ -38,10 +39,19 @@ struct SpendingChartViewModelTests {
             amount: amount,
             merchant: "Merchant",
             card: "Card",
-            category: category
+            category: category,
+            createdAt: date
         )
         context.insert(transaction)
         return transaction
+    }
+
+    private static func date(year: Int, month: Int, day: Int = 1) -> Date {
+        var components = DateComponents()
+        components.year = year
+        components.month = month
+        components.day = day
+        return Calendar.current.date(from: components) ?? Date()
     }
 
     // MARK: - aggregate
