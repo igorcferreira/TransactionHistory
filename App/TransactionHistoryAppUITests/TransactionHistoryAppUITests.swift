@@ -6,6 +6,8 @@
 //
 
 import XCTest
+@testable import TransactionHistoryApp
+@testable import TransactionHistory
 
 final class TransactionHistoryAppUITests: XCTestCase {
 
@@ -28,7 +30,7 @@ final class TransactionHistoryAppUITests: XCTestCase {
         // This measures how long it takes to launch your application.
         measure(metrics: [XCTApplicationLaunchMetric()]) {
             let app = XCUIApplication()
-            app.launchEnvironment["IS_UI_TESTING"] = "1"
+            app.launchEnvironment[ProcessInfo.isTestEnvironmentKey] = "1"
             app.launch()
         }
     }

@@ -6,6 +6,8 @@
 //
 
 import XCTest
+@testable import TransactionHistoryApp
+@testable import TransactionHistory
 
 final class TransactionHistoryAppUITestsLaunchTests: XCTestCase {
 
@@ -20,7 +22,7 @@ final class TransactionHistoryAppUITestsLaunchTests: XCTestCase {
     @MainActor
     func testLaunch() throws {
         let app = XCUIApplication()
-        app.launchEnvironment["IS_UI_TESTING"] = "1"
+        app.launchEnvironment[ProcessInfo.isTestEnvironmentKey] = "1"
         app.launch()
 
         // Insert steps here to perform after app launch but before taking a screenshot,
