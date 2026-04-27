@@ -6,6 +6,7 @@
 //
 
 import XCTest
+@testable import TransactionHistoryApp
 
 final class TransactionHistoryAppUITests: XCTestCase {
 

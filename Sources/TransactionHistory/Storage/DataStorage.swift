@@ -53,7 +53,7 @@ public struct DataStorage: Sendable {
         self.sharedModelContainer = container
     }
 
-    func top() throws -> [CardTransaction] {
+    func top() throws(DataStorageError) -> [CardTransaction] {
         let start = ContinuousClock.now
         var descriptor = FetchDescriptor<CardTransaction>(
             sortBy: [
@@ -61,32 +61,40 @@ public struct DataStorage: Sendable {
             ]
         )
         descriptor.fetchLimit = 10
-        let transactions = try modelContext.fetch(descriptor)
-        Self.fetchTimer.record(duration: ContinuousClock.now - start)
-        Self.logger.debug(
-            "Fetched top transactions",
-            metadata: [
-                "resultCount": "\(transactions.count)",
-                "fetchLimit": "10"
-            ]
-        )
-        return transactions
+        do {
+            let transactions = try modelContext.fetch(descriptor)
+            Self.fetchTimer.record(duration: ContinuousClock.now - start)
+            Self.logger.debug(
+                "Fetched top transactions",
+                metadata: [
+                    "resultCount": "\(transactions.count)",
+                    "fetchLimit": "10"
+                ]
+            )
+            return transactions
+        } catch {
+            throw DataStorageError.fetchFailed
+        }
     }
 
-    func with(ids: [UUID]) throws -> [CardTransaction] {
+    func with(ids: [UUID]) throws(DataStorageError) -> [CardTransaction] {
         let start = ContinuousClock.now
-        let transactions = try modelContext.fetch(FetchDescriptor<CardTransaction>(
-            predicate: #Predicate { item in ids.contains(item.id) }
-        ))
-        Self.fetchTimer.record(duration: ContinuousClock.now - start)
-        Self.logger.debug(
-            "Fetched transactions by identifiers",
-            metadata: [
-                "requestedCount": "\(ids.count)",
-                "resultCount": "\(transactions.count)"
-            ]
-        )
-        return transactions
+        do {
+            let transactions = try modelContext.fetch(FetchDescriptor<CardTransaction>(
+                predicate: #Predicate { item in ids.contains(item.id) }
+            ))
+            Self.fetchTimer.record(duration: ContinuousClock.now - start)
+            Self.logger.debug(
+                "Fetched transactions by identifiers",
+                metadata: [
+                    "requestedCount": "\(ids.count)",
+                    "resultCount": "\(transactions.count)"
+                ]
+            )
+            return transactions
+        } catch {
+            throw DataStorageError.fetchFailed
+        }
     }
 }
 

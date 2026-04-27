@@ -83,7 +83,7 @@ final class CreateTransactionViewModel {
         in container: ModelContainer,
         donate: Bool = true,
         logger: Logger = AppLogger.makeLogger(label: "feature.createTransaction")
-    ) async throws {
+    ) async throws(CreateTransactionIntent.CreateTransactionError) {
         guard let amount = parsedAmount else {
             logger.warning(
                 "Blocked save because the amount is invalid",

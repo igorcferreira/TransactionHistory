@@ -22,11 +22,14 @@ struct CreateTransactionIntent: AppIntent, Sendable {
 
     enum CreateTransactionError: LocalizedError {
         case invalidAmount
+        case databaseError
 
         var errorDescription: String? {
             switch self {
             case .invalidAmount:
                 return "Invalid amount. The amount must be formatted with a valid currency symbol and value."
+            case .databaseError:
+                return "Unable to save the transaction. Please try again."
             }
         }
     }
@@ -112,7 +115,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
     /// Persists a transaction in the given model context.
     func createTransaction(
         _ request: CreateTransactionRequest
-    ) throws -> CardTransaction {
+    ) throws(CreateTransactionError) -> CardTransaction {
         let mapper = CurrencyMapper()
         guard let mapped = mapper.parse(request.amount) else {
             Self.creationFailureCounter.increment()
@@ -136,23 +139,27 @@ struct CreateTransactionIntent: AppIntent, Sendable {
             createdAt: request.date ?? Date()
         )
         let ctx = ModelContext(container)
-        try ctx.transaction {
-            ctx.insert(transaction)
-            try ctx.save()
+        do {
+            try ctx.transaction {
+                ctx.insert(transaction)
+                try ctx.save()
+            }
+            Self.creationCounter.increment()
+            logger.info(
+                "Persisted transaction",
+                metadata: [
+                    "transactionID": "\(transaction.id.uuidString)",
+                    "merchant": "\(request.merchant)",
+                    "currency": "\(mapped.code)",
+                    "amount": "\(mapped.value)",
+                    "category": "\(request.category.rawValue)",
+                    "createdAt": "\(transaction.createdAt.ISO8601Format())"
+                ]
+            )
+            return transaction
+        } catch {
+            throw CreateTransactionError.databaseError
         }
-        Self.creationCounter.increment()
-        logger.info(
-            "Persisted transaction",
-            metadata: [
-                "transactionID": "\(transaction.id.uuidString)",
-                "merchant": "\(request.merchant)",
-                "currency": "\(mapped.code)",
-                "amount": "\(mapped.value)",
-                "category": "\(request.category.rawValue)",
-                "createdAt": "\(transaction.createdAt.ISO8601Format())"
-            ]
-        )
-        return transaction
     }
 
     /// Executes the intent via `callAsFunction(donate:)`.
@@ -168,7 +175,7 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         donate: Bool = true,
         container: ModelContainer = DataStorage().sharedModelContainer,
         logger: Logger = AppLogger.makeLogger(label: "intent.createTransaction")
-    ) async throws {
+    ) async throws(CreateTransactionError) {
         let logger = logger.scoped(
             "intent.createTransaction",
             metadata: [
@@ -190,6 +197,12 @@ struct CreateTransactionIntent: AppIntent, Sendable {
         intent.card = card
         intent.date = date
         intent.category = category
-        _ = try await intent.callAsFunction(donate: donate)
+        do {
+            _ = try await intent.callAsFunction(donate: donate)
+        } catch let error as CreateTransactionError {
+            throw error
+        } catch {
+            throw CreateTransactionError.databaseError
+        }
     }
 }

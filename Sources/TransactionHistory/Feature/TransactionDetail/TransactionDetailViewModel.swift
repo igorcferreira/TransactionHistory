@@ -65,21 +65,29 @@ final class TransactionDetailViewModel {
         category = transaction.category
     }
 
-    func save(on modelContext: ModelContext) throws {
-        try modelContext.transaction {
-            transaction.name = name
-            transaction.merchant = merchant
-            transaction.card = card
-            transaction.category = category
-            try modelContext.save()
+    func save(on modelContext: ModelContext) throws(TransactionDetailError) {
+        do {
+            try modelContext.transaction {
+                transaction.name = name
+                transaction.merchant = merchant
+                transaction.card = card
+                transaction.category = category
+                try modelContext.save()
+            }
+        } catch {
+            throw TransactionDetailError.saveFailed
         }
     }
 
     /// Permanently removes the transaction from the persistent store.
-    func delete(on modelContext: ModelContext) throws {
-        try modelContext.transaction {
-            modelContext.delete(transaction)
-            try modelContext.save()
+    func delete(on modelContext: ModelContext) throws(TransactionDetailError) {
+        do {
+            try modelContext.transaction {
+                modelContext.delete(transaction)
+                try modelContext.save()
+            }
+        } catch {
+            throw TransactionDetailError.deleteFailed
         }
     }
 }
