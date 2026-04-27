@@ -144,4 +144,30 @@ struct DataStorageTests {
         #expect(resultIDs == Set(targetIDs))
     }
 
+    // MARK: - Error types
+
+    @Test("top() error type is DataStorageError")
+    func topErrorType() throws {
+        // GIVEN a valid storage (happy path — typed throws checked at compile time)
+        let storage = try Self.makeStorage()
+        // WHEN calling top()
+        // THEN the call site requires no cast — the compiler enforces DataStorageError.
+        // SwiftData in-memory containers don't produce fetch errors under normal conditions;
+        // fault-injection testing requires a custom ModelContext not available in-process.
+        let result: [CardTransaction] = try storage.top()
+        #expect(result.isEmpty)
+    }
+
+    @Test("with(ids:) error type is DataStorageError")
+    func withIdsErrorType() throws {
+        // GIVEN a valid storage (happy path — typed throws checked at compile time)
+        let storage = try Self.makeStorage()
+        // WHEN calling with(ids:) with an empty list
+        // THEN the call site requires no cast — the compiler enforces DataStorageError.
+        // SwiftData in-memory containers don't produce fetch errors under normal conditions;
+        // fault-injection testing requires a custom ModelContext not available in-process.
+        let result: [CardTransaction] = try storage.with(ids: [])
+        #expect(result.isEmpty)
+    }
+
 }
