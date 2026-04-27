@@ -62,7 +62,11 @@ jobs:
         uses: actions/checkout@v6
       - name: Run iOS app tests
         run: |
+          # SWIFT_SUPPRESS_WARNINGS=NO prevents Xcode from passing -suppress-warnings
+          # to local package dependency targets, which would conflict with the package's
+          # .treatAllWarnings(as: .error) Swift setting (-warnings-as-errors).
           (cd App ; xcodebuild test -configuration Debug \
             -scheme 'TransactionHistoryApp' \
             -destination 'platform=iOS Simulator,OS=latest,arch=arm64,name=iPhone 17' \
-            -only-testing:TransactionHistoryAppTests)
+            -only-testing:TransactionHistoryAppTests \
+            SWIFT_SUPPRESS_WARNINGS=NO)
