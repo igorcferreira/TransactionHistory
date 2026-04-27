@@ -87,7 +87,6 @@ public struct TransactionListView: View {
     }
 
     private func deleteSelected(logger: Logger) {
-        let count = viewModel.selection.count
         let edited = viewModel.deleteSelected(
             on: modelContext,
             logger: logger
