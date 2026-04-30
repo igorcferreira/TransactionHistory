@@ -30,9 +30,6 @@ let package = Package(
                 .product(name: "Logging", package: "swift-log"),
                 .product(name: "Metrics", package: "swift-metrics"),
                 .product(name: "Scout", package: "scout")
-            ],
-            swiftSettings: [
-                .treatAllWarnings(as: .error)
             ]
         ),
         .testTarget(
@@ -40,9 +37,6 @@ let package = Package(
             dependencies: [
                 .byName(name: "TransactionHistory"),
                 .product(name: "ViewInspector", package: "ViewInspector")
-            ],
-            swiftSettings: [
-                .treatAllWarnings(as: .error)
             ]
         ),
     ]
