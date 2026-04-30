@@ -43,6 +43,22 @@ public struct TransactionListView: View {
                 onTransactionTapped: onTransactionTapped
             )
         }
+        .safeAreaInset(edge: .bottom) {
+            if viewModel.hasSelection {
+                Button(role: .destructive) {
+                    deleteSelected(logger: listLogger)
+                } label: {
+                    Text("Delete (\(viewModel.selection.count))")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(.red)
+                .padding()
+                .background(.bar)
+                .transition(.move(edge: .bottom).combined(with: .opacity))
+            }
+        }
+        .animation(.default, value: viewModel.hasSelection)
         .toast(message: $viewModel.errorMessage)
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -55,15 +71,6 @@ public struct TransactionListView: View {
             }
             ToolbarItem(placement: .destructiveAction) {
                 EditButton()
-            }
-            if viewModel.hasSelection {
-                ToolbarItem(placement: .bottomBar) {
-                    Button(role: .destructive) {
-                        deleteSelected(logger: listLogger)
-                    } label: {
-                        Text("Delete (\(viewModel.selection.count))")
-                    }
-                }
             }
         }
         .onAppear {
