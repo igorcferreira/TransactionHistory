@@ -15,15 +15,22 @@ public struct NotificationService: @unchecked Sendable {
     static let setCategoryActionIdentifier = "SET_CATEGORY"
     static let transactionIDKey = "transactionID"
 
-    private let center: UNUserNotificationCenter
+    private let center: UNUserNotificationCenter?
     private let logger: Logger
 
+    /// - Parameter center: Pass `nil` (default) to use `.current()` lazily at
+    ///   call time. This avoids a crash in package-test runners where no app
+    ///   bundle exists and `UNUserNotificationCenter.current()` throws.
     public init(
-        center: UNUserNotificationCenter = .current(),
+        center: UNUserNotificationCenter? = nil,
         logger: Logger? = nil
     ) {
         self.center = center
         self.logger = logger ?? AppLogger.defaultLogger
+    }
+
+    private var resolvedCenter: UNUserNotificationCenter {
+        center ?? .current()
     }
 
     /// Registers the notification category with a "Set Category" action.
@@ -39,14 +46,14 @@ public struct NotificationService: @unchecked Sendable {
             intentIdentifiers: [],
             options: []
         )
-        center.setNotificationCategories([category])
+        resolvedCenter.setNotificationCategories([category])
         logger.debug("Registered notification categories")
     }
 
     /// Requests notification authorization from the user.
     @discardableResult
     public func requestAuthorization() async throws -> Bool {
-        let granted = try await center.requestAuthorization(
+        let granted = try await resolvedCenter.requestAuthorization(
             options: [.alert, .badge, .sound]
         )
         logger.info(
@@ -58,7 +65,7 @@ public struct NotificationService: @unchecked Sendable {
 
     /// Returns the current notification authorization status.
     public func authorizationStatus() async -> UNAuthorizationStatus {
-        await center.notificationSettings().authorizationStatus
+        await resolvedCenter.notificationSettings().authorizationStatus
     }
 
     /// Posts a local notification for a transaction created in the background.
@@ -91,7 +98,7 @@ public struct NotificationService: @unchecked Sendable {
             trigger: trigger
         )
 
-        try await center.add(request)
+        try await resolvedCenter.add(request)
         logger.info(
             "Posted transaction notification",
             metadata: ["transactionID": "\(transactionID.uuidString)"]
