@@ -42,17 +42,21 @@ struct CreateTransactionIntent: AppIntent, Sendable {
 
     private let container: ModelContainer
     private let logger: Logger
+    private let notificationService: NotificationService
 
     init(
         container: ModelContainer,
+        notificationService: NotificationService = NotificationService(),
         logger: Logger = AppLogger.makeLogger(label: "intent.createTransaction")
     ) {
         self.container = container
+        self.notificationService = notificationService
         self.logger = logger
     }
 
     init() {
         self.container = DataStorage().sharedModelContainer
+        self.notificationService = NotificationService()
         self.logger = AppLogger.makeLogger(label: "intent.createTransaction")
     }
 
@@ -109,6 +113,17 @@ struct CreateTransactionIntent: AppIntent, Sendable {
             "Create transaction intent completed",
             metadata: ["transactionID": "\(card.id.uuidString)"]
         )
+
+        // Only notify when the user did not specify a category.
+        if category == nil {
+            try? await notificationService.postTransactionCreated(
+                name: card.name,
+                merchant: card.merchant,
+                formattedAmount: card.formattedAmount,
+                transactionID: card.id
+            )
+        }
+
         return .result(value: .init(card))
     }
 
