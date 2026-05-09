@@ -4,12 +4,16 @@
 //
 //  Created by Igor Ferreira on 14/03/2026.
 //
+import Logging
+import SwiftData
 import SwiftUI
 
 /// Root view that hosts the NavigationStack and coordinates navigation
 /// between the transaction list and detail screens.
 public struct TransactionCoordinatorView: View {
     @Environment(\.transactionHistoryLogger) private var logger
+    @Environment(\.notificationRouter) private var notificationRouter
+    @Environment(\.modelContext) private var modelContext
     @State private var viewModel = TransactionCoordinatorViewModel()
     @State private var editMode: EditMode = .inactive
 
@@ -56,7 +60,34 @@ public struct TransactionCoordinatorView: View {
         .onAppear {
             coordinatorLogger.info("Transaction coordinator displayed")
         }
+        .onChange(of: notificationRouter.pendingDetailTransactionID) {
+            guard let transactionID = notificationRouter.pendingDetailTransactionID else { return }
+            notificationRouter.pendingDetailTransactionID = nil
+            navigateToTransaction(
+                id: transactionID,
+                logger: coordinatorLogger
+            )
+        }
         .environment(\.editMode, $editMode)
+    }
+
+    private func navigateToTransaction(id: UUID, logger: Logger) {
+        let context = ModelContext(modelContext.container)
+        var descriptor = FetchDescriptor<CardTransaction>(
+            predicate: #Predicate { $0.id == id }
+        )
+        descriptor.fetchLimit = 1
+
+        guard let transaction = try? context.fetch(descriptor).first else {
+            logger.warning(
+                "Could not navigate to transaction from notification",
+                metadata: ["transactionID": "\(id.uuidString)"]
+            )
+            return
+        }
+
+        viewModel.popToRoot(logger: logger)
+        viewModel.showDetail(for: transaction, logger: logger)
     }
 }
 

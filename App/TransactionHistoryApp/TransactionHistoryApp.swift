@@ -11,20 +11,36 @@ import Scout
 import SwiftData
 import SwiftUI
 import TransactionHistory
+import UserNotifications
 
 @main
 struct TransactionHistoryApp: App {
     private let dataStorage: DataStorage
+    private let notificationDelegate: NotificationDelegate
+    private let notificationRouter = NotificationRouter()
 
     init() {
         TransactionHistoryProvider.updateAppShortcutParameters()
         Self.setupLogger()
         self.dataStorage = DataStorage()
+
+        let delegate = NotificationDelegate()
+        self.notificationDelegate = delegate
+        UNUserNotificationCenter.current().delegate = delegate
+        NotificationService().registerCategories()
+
+        delegate.onSetCategoryAction = { [notificationRouter] transactionID in
+            notificationRouter.pendingCategoryTransactionID = transactionID
+        }
+        delegate.onShowDetail = { [notificationRouter] transactionID in
+            notificationRouter.pendingDetailTransactionID = transactionID
+        }
     }
 
     var body: some Scene {
         WindowGroup {
             AppCoordinatorView()
+                .notificationRouter(notificationRouter)
         }
         .modelContainer(dataStorage.sharedModelContainer)
     }
