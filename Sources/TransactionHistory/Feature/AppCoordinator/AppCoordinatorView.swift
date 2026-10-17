@@ -14,20 +14,14 @@ public struct AppCoordinatorView: View {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
     @Environment(\.notificationRouter) private var notificationRouter
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.horizontalSizeClass) var horizontalSizeClass
     @State private var viewModel = AppCoordinatorViewModel()
 
     public init() {}
 
     public var body: some View {
         if hasCompletedOnboarding {
-            TabView(selection: $viewModel.selectedTab) {
-                Tab("Transactions", systemImage: "list.bullet", value: .transactions) {
-                    TransactionCoordinatorView()
-                }
-                Tab("Spending", systemImage: "chart.pie", value: .spending) {
-                    SpendingCoordinatorView()
-                }
-            }
+            mainContent
             .sheet(
                 item: Binding(
                     get: { notificationRouter.pendingCategoryTransactionID.map(PendingTransaction.init) },
@@ -48,6 +42,40 @@ public struct AppCoordinatorView: View {
             OnboardingCoordinatorView {
                 hasCompletedOnboarding = true
             }
+        }
+    }
+    
+    @ViewBuilder
+    private var mainContent: some View {
+        if horizontalSizeClass == .compact {
+            tabbedContent
+        } else {
+            sideBySideContent
+        }
+    }
+    
+    @ViewBuilder
+    private var tabbedContent: some View {
+        TabView(selection: $viewModel.selectedTab) {
+            Tab("Transactions", systemImage: "list.bullet", value: .transactions) {
+                TransactionCoordinatorView()
+            }
+            Tab("Spending", systemImage: "chart.pie", value: .spending) {
+                SpendingCoordinatorView()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var sideBySideContent: some View {
+        if #available(anyAppleOS 27.1, *) {
+            ArrangementView {
+                SpendingCoordinatorView()
+            } secondary: {
+                TransactionCoordinatorView()
+            }
+        } else {
+            tabbedContent
         }
     }
 }
