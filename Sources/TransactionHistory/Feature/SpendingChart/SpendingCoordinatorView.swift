@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import struct Logging.Logger
 
 /// Coordinator that owns the NavigationStack for the spending chart feature.
 public struct SpendingCoordinatorView: View {

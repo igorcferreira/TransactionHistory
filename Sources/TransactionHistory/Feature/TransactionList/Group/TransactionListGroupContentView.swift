@@ -6,6 +6,7 @@
 //
 import Logging
 import SwiftUI
+import class SwiftData.ModelContext
 
 /// Renders grouped transactions as a sectioned list.
 /// Separated from `TransactionListGroupView` so the rendering

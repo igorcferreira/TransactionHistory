@@ -1,0 +1,9 @@
+{
+  "id" : "b6dc3c29-b14b-4700-b7e3-27dbfe3e5537",
+  "targets" : [
+    {
+      "id" : "20C708FF-DDD7-47FF-BD63-607ED108FD42",
+      "name" : "TransactionHistoryApp"
+    }
+  ]
+}

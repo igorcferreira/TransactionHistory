@@ -6,6 +6,7 @@
 //
 import Logging
 import SwiftUI
+import class SwiftData.ModelContext
 
 struct TransactionDetailView: View {
     @Environment(\.transactionHistoryLogger) private var logger

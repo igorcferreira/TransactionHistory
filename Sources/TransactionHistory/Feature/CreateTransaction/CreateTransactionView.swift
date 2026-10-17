@@ -5,8 +5,9 @@
 //  Created by Igor Ferreira on 15/03/2026.
 //
 
-import SwiftData
+import class SwiftData.ModelContext
 import SwiftUI
+import struct Logging.Logger
 
 /// Form for manually creating a new transaction, presented as a sheet.
 struct CreateTransactionView: View {
